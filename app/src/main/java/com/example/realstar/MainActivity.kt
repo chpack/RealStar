@@ -42,6 +42,8 @@ class MainActivity : AppCompatActivity() {
     var endc = ConstraintSet();
     var i = 0
 
+    lateinit var sky: Sky
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,18 +52,18 @@ class MainActivity : AppCompatActivity() {
         startc.clone(clay)
         endc.clone(clay)
 
-        startc.constrainCircle(R.id.button4,R.id.dissbut,100,0f)
-        endc.constrainCircle(R.id.button4,R.id.dissbut,200,180f)
+        startc.constrainCircle(R.id.button4, R.id.dissbut, 100, 0f)
+        endc.constrainCircle(R.id.button4, R.id.dissbut, 200, 180f)
 
         dissbut.setOnClickListener { v ->
-            if(v.layoutParams is ConstraintLayout.LayoutParams)
-                Log.d("asdfasdf","is constlp")
+            if (v.layoutParams is ConstraintLayout.LayoutParams)
+                Log.d("asdfasdf", "is constlp")
 
             TransitionManager.beginDelayedTransition(clay)
-            if(i++%2 == 0){
+            if (i++ % 2 == 0) {
                 startc.applyTo(clay)
                 button4.text = "ffff"
-            }else{
+            } else {
                 endc.applyTo(clay)
                 button4.text = "faaaa"
             }
@@ -73,7 +75,9 @@ class MainActivity : AppCompatActivity() {
 
 //        but = Button(this);
 //        (but as Button).text = "a butt";
-        but = ConstraintLayout.inflate(this, R.layout.floatlayout, null)
+//        but = ConstraintLayout.inflate(this, R.layout.floatlayout, null)
+        sky = Sky(this, windowManager)
+        but = sky.root
 //        but?.findViewById<Button>(R.id.button)?.setOnClickListener {   v->Log.d("asdfasdf","click") }
 //        button.setOnClickListener { v->Log.d("asdfasdf","click") }
 //        but?.setOnClickListener { v -> Log.d("asdfasdf", "click") }
@@ -87,59 +91,7 @@ class MainActivity : AppCompatActivity() {
                 getPermis();
             }
         }
-        val li: (View, MotionEvent) -> Boolean = { v, event ->
-            Log.d(
-                "asdfasfd",
-                "x${event.x}  rawx${event.rawX}  xp${event.xPrecision} action ${event.action} ${when (v.id) {
-                    R.id.button -> "but"
-                    R.id.imageView2 -> "img"
-                    R.id.asdf -> "layout"
-                    else -> "other${v.id} ${R.id.button} ${R.id.imageView2}"
-                }
-                }"
-            )
-            when (v.id) {
-                R.id.button -> {
-                    Log.d("asdfasdf", "button on touch")
-
-//                    val l = (v.layoutParams as ConstraintLayout.LayoutParams)
-//                    l.rightToLeft = l.leftToRight
-//                    l.bottomToTop = l.topToBottom
-//                    l.leftToRight = 0
-//                    l.topToBottom = 0
-                    true
-                }
-                R.id.imageView2 -> {
-
-                    if (event.action == MotionEvent.ACTION_DOWN) {
-                        nx = event.rawX.toInt()
-                        ny = event.rawY.toInt()
-                    }
-                    val dx = event.rawX.toInt() - nx
-                    val dy = event.rawY.toInt() - ny
-                    lp.x += dx
-                    lp.y += dy
-//            lp.x += event.x.toInt()
-//            lp.y += event.y.toInt()
-                    nx = event.rawX.toInt()
-                    ny = event.rawY.toInt()
-                    update()
-                    true
-                }
-                else -> {
-                    Log.d("asdfasdf", "other")
-                    super.onTouchEvent(event)
-//                    false
-                }
-            }
-
-        }
-
-//        but?.setOnTouchListener(li)
-        but?.findViewById<Button>(R.id.button)?.setOnTouchListener(li)
-        but?.findViewById<ImageView>(R.id.imageView2)?.setOnTouchListener(li)
-
-//        but?.setOnTouchListener { v, event ->
+//        val li: (View, MotionEvent) -> Boolean = { v, event ->
 //            Log.d(
 //                "asdfasfd",
 //                "x${event.x}  rawx${event.rawX}  xp${event.xPrecision} action ${event.action} ${when (v.id) {
@@ -153,6 +105,12 @@ class MainActivity : AppCompatActivity() {
 //            when (v.id) {
 //                R.id.button -> {
 //                    Log.d("asdfasdf", "button on touch")
+//
+////                    val l = (v.layoutParams as ConstraintLayout.LayoutParams)
+////                    l.rightToLeft = l.leftToRight
+////                    l.bottomToTop = l.topToBottom
+////                    l.leftToRight = 0
+////                    l.topToBottom = 0
 //                    true
 //                }
 //                R.id.imageView2 -> {
@@ -178,8 +136,13 @@ class MainActivity : AppCompatActivity() {
 ////                    false
 //                }
 //            }
-////            true
+//
 //        }
+
+//        but?.setOnTouchListener(li)
+//        but?.findViewById<Button>(R.id.button)?.setOnTouchListener(li)
+//        but?.findViewById<ImageView>(R.id.imageView2)?.setOnTouchListener(li)
+
     }
 
     fun update() {
@@ -190,10 +153,6 @@ class MainActivity : AppCompatActivity() {
 //        var lp = WindowManager.LayoutParams()
         Log.d("asdfasdf", "start float")
         lp.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-//        lp.flags = WindowManager.LayoutParams.FLAG_FULLSCREEN
-//        lp.flags = WindowManager.LayoutParams.FLAG_FORCE_NOT_FULLSCREEN
-//        lp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION
-//        lp.flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION
         lp.format = PixelFormat.RGBA_8888;
         lp.flags =
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
@@ -201,15 +160,13 @@ class MainActivity : AppCompatActivity() {
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                     WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR or
                     0
-//        WindowManager.LayoutParams.FLAG_WATCH_OUTSIDE_TOUCH
-//        lp.flags = WindowManager.LayoutParams.FLAG_
-//        lp.gravity = Gravity.LEFT or Gravity.TOP
-        lp.width = WindowManager.LayoutParams.WRAP_CONTENT;
-        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+//        lp.width = WindowManager.LayoutParams.WRAP_CONTENT;
+//        lp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        lp.width = WindowManager.LayoutParams.MATCH_PARENT
+        lp.height = WindowManager.LayoutParams.MATCH_PARENT
         lp.x = nx
         lp.y = ny
         windowManager.addView(but, lp)
-
     }
 
     fun getPermis() {
