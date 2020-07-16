@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">RealStar</string>
+    <string name="show">show</string>
+    <string name="dismiss">dismiss</string>
+</resources>
