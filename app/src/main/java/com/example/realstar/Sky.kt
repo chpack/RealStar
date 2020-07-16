@@ -2,6 +2,7 @@ package com.example.realstar
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.PixelFormat
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
@@ -20,7 +21,7 @@ object SkyAttr {
 }
 
 @SuppressLint("ClickableViewAccessibility")
-class Sky(context: Context, wm: WindowManager) {
+class Sky(context: Context, private var wm: WindowManager) {
 
     /**
      * Views
@@ -30,7 +31,7 @@ class Sky(context: Context, wm: WindowManager) {
      */
     var root: ConstraintLayout =
         ConstraintLayout.inflate(context, R.layout.sky_layout, null) as ConstraintLayout
-    var stars: Array<ImageView> = arrayOf(
+    private var stars: Array<ImageView> = arrayOf(
         root.findViewById<ImageView>(R.id.star_0),
         root.findViewById<ImageView>(R.id.star_1),
         root.findViewById<ImageView>(R.id.star_2),
@@ -39,7 +40,7 @@ class Sky(context: Context, wm: WindowManager) {
         root.findViewById<ImageView>(R.id.star_5),
         root.findViewById<ImageView>(R.id.star_6)
     )
-    var pointer: View = root.findViewById<View>(R.id.pointer)
+    private var pointer: View = root.findViewById<View>(R.id.pointer)
 
     /**
      * UserMode mean operation mode.
@@ -49,12 +50,15 @@ class Sky(context: Context, wm: WindowManager) {
     enum class UserMode { ACTIVITY, FLOAT }
 
     private var usermode = UserMode.FLOAT
+    private var wlp = WindowManager.LayoutParams()
+    private var nx = 100
+    private var ny = 100
 
     /**
      * Layout of all sectuin
      * @startLP is the first layout
      */
-    var indexLP = 0
+    private var indexLP = 0
     private var swapLP = arrayOf(ConstraintSet(), ConstraintSet(), ConstraintSet())
 
     private val startLP: ConstraintSet get() = swapLP[0]
@@ -84,6 +88,8 @@ class Sky(context: Context, wm: WindowManager) {
             if (v != stars[0])
                 startLP.constrainCircle(v.id, stars[0].id, 0, 0f)
         }
+
+        setSize()
     }
 
     val rootListener: (v: View, event: MotionEvent) -> Boolean = { v, event ->
@@ -123,11 +129,32 @@ class Sky(context: Context, wm: WindowManager) {
         }
     }
 
-    private fun initWindow() {}
+    private fun initWindow() {
+        wlp.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+        wlp.format = PixelFormat.RGBA_8888;
+        wlp.flags =
+            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+                    WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
+                    WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR or
+                    0
+//        wlp.width = WindowManager.LayoutParams.WRAP_CONTENT;
+//        wlp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        wlp.width = WindowManager.LayoutParams.MATCH_PARENT
+        wlp.height = WindowManager.LayoutParams.MATCH_PARENT
+        wlp.x = nx
+        wlp.y = ny
+        wm.addView(root, wlp)
 
+    }
 
     private fun startWindow(event: MotionEvent) {
         if (usermode == UserMode.ACTIVITY) return
+        wlp.width = WindowManager.LayoutParams.MATCH_PARENT
+        wlp.height = WindowManager.LayoutParams.MATCH_PARENT
+        wlp.x = nx
+        wlp.y = ny
+        wm.updateViewLayout(root, wlp)
     }
 
     private fun startSkyLine(event: MotionEvent) {
@@ -142,7 +169,13 @@ class Sky(context: Context, wm: WindowManager) {
 
     private fun doAction() {}
 
-    private fun endWindow() {}
+    private fun endWindow() {
+        wlp.width = SkyAttr.size
+        wlp.height = SkyAttr.size
+        wlp.x = nx
+        wlp.y = ny
+        wm.updateViewLayout(root, wlp)
+    }
 
     private fun endSkyLine() {}
 
