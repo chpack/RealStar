@@ -214,6 +214,7 @@ class Sky(context: Context, private var wm: WindowManager) {
     private fun doAction() {}
 
     private fun endWindow() {
+        setCenter(SkyAttr.size / 2f, SkyAttr.size / 2f)
         wlp.width = SkyAttr.size
         wlp.height = SkyAttr.size
         wlp.x = nx
@@ -224,8 +225,8 @@ class Sky(context: Context, private var wm: WindowManager) {
     private fun endSkyLine() {}
 
     private fun setWindow(x: Float, y: Float): Boolean {
-        nx = x.toInt() - SkyAttr.size/2
-        ny = y.toInt() - SkyAttr.size/2
+        nx = x.toInt() - SkyAttr.size / 2
+        ny = y.toInt() - SkyAttr.size / 2
         endWindow()
         return true
     }
