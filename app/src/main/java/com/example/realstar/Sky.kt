@@ -13,6 +13,7 @@ import android.view.WindowManager
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
+import kotlinx.android.synthetic.main.sky_layout.view.*
 import kotlin.math.atan2
 import kotlin.math.cos
 import kotlin.math.pow
@@ -31,15 +32,9 @@ class Sky(context: Context, private var wm: WindowManager) {
     private var root: ConstraintLayout =
         ConstraintLayout.inflate(context, R.layout.sky_layout, null) as ConstraintLayout
     private var stars: Array<ImageView> = arrayOf(
-        root.findViewById(R.id.star_0),
-        root.findViewById(R.id.star_1),
-        root.findViewById(R.id.star_2),
-        root.findViewById(R.id.star_3),
-        root.findViewById(R.id.star_4),
-        root.findViewById(R.id.star_5),
-        root.findViewById(R.id.star_6)
+        root.star_0, root.star_1, root.star_2, root.star_3, root.star_4, root.star_5, root.star_6
     )
-    private var pointer: View = root.findViewById<View>(R.id.pointer)
+    private var pointer: View = root.pointer
     private var subStars = IntArray(6)
     private fun subs(i: Int) = stars[subStars[i]]
 
@@ -164,11 +159,9 @@ class Sky(context: Context, private var wm: WindowManager) {
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                     WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR or
                     0
-//        wlp.width = WindowManager.LayoutParams.WRAP_CONTENT;
-//        wlp.height = WindowManager.LayoutParams.WRAP_CONTENT;
         wlp.gravity = Gravity.START or Gravity.TOP
-        wlp.width = WindowManager.LayoutParams.MATCH_PARENT
-        wlp.height = WindowManager.LayoutParams.MATCH_PARENT
+        wlp.width = SkyAttr.size
+        wlp.height = SkyAttr.size
         wlp.x = nx
         wlp.y = ny
         wm.addView(root, wlp)
