@@ -6,6 +6,7 @@ import android.graphics.PixelFormat.RGBA_8888
 import android.graphics.drawable.Drawable
 import android.transition.TransitionManager
 import android.util.Log
+import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
@@ -53,6 +54,7 @@ class Sky(context: Context, private var wm: WindowManager) {
     private var wlp = WindowManager.LayoutParams()
     private var nx = 100
     private var ny = 100
+    private var moveMode = false
 
     /**
      * Layout of all sectuin
@@ -71,8 +73,24 @@ class Sky(context: Context, private var wm: WindowManager) {
         initWindow()
         initLPs()
         root.setOnTouchListener { v, event ->
-            if (v == null || event == null) false
-            else rootListener(event.action, event.rawX, event.rawY)
+            when {
+                v == null || event == null -> false
+                event.action == MotionEvent.ACTION_UP && event.eventTime - event.downTime < 500 -> {
+                    moveMode = true
+                    rootListener(MotionEvent.ACTION_CANCEL, event.rawX, event.rawY)
+                }
+                moveMode && event.action != MotionEvent.ACTION_UP ->
+                    setWindow(event.rawX, event.rawY)
+                moveMode && event.action == MotionEvent.ACTION_UP -> {
+                    moveMode = false
+                    true
+                }
+                else -> {
+                    Log.d("asdfasdf", "${event.downTime} ${event.eventTime}")
+                    rootListener(event.action, event.rawX, event.rawY)
+                }
+            }
+
         }
 
         SkyAttr.sizeChange = { setSize() }
@@ -148,6 +166,7 @@ class Sky(context: Context, private var wm: WindowManager) {
                     0
 //        wlp.width = WindowManager.LayoutParams.WRAP_CONTENT;
 //        wlp.height = WindowManager.LayoutParams.WRAP_CONTENT;
+        wlp.gravity = Gravity.START or Gravity.TOP
         wlp.width = WindowManager.LayoutParams.MATCH_PARENT
         wlp.height = WindowManager.LayoutParams.MATCH_PARENT
         wlp.x = nx
@@ -182,7 +201,6 @@ class Sky(context: Context, private var wm: WindowManager) {
         val ind = (ang + SkyAttr.cwidth / 2).toInt() % 360 / (360 / SkyAttr.num)
         val dis = (dx * dx * 1.0 + dy * dy).pow(0.5)
 
-        Log.d("asdfasdf", "angle $ind $ang $dis  po ${pointer.x} ${pointer.y}")
         if (SkyAttr.length - SkyAttr.size / 2 < dis && dis < SkyAttr.length + SkyAttr.size / 2) {
             path += "$ind"
             setCenter(
@@ -204,6 +222,13 @@ class Sky(context: Context, private var wm: WindowManager) {
     }
 
     private fun endSkyLine() {}
+
+    private fun setWindow(x: Float, y: Float): Boolean {
+        nx = x.toInt() - SkyAttr.size/2
+        ny = y.toInt() - SkyAttr.size/2
+        endWindow()
+        return true
+    }
 
     private fun setSize() {
         stars.forEach { v ->
