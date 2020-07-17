@@ -2,7 +2,7 @@ package com.example.realstar
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.PixelFormat
+import android.graphics.PixelFormat.RGBA_8888
 import android.transition.TransitionManager
 import android.util.Log
 import android.view.MotionEvent
@@ -12,7 +12,10 @@ import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import kotlin.math.atan2
+import kotlin.math.cos
 import kotlin.math.pow
+import kotlin.math.sin
+
 
 @SuppressLint("ClickableViewAccessibility")
 class Sky(context: Context, private var wm: WindowManager) {
@@ -67,7 +70,7 @@ class Sky(context: Context, private var wm: WindowManager) {
         initLPs()
         root.setOnTouchListener { v, event ->
             if (v == null || event == null) false
-            else rootListener(v, event)
+            else rootListener(event.action, event.rawX, event.rawY)
         }
 
         SkyAttr.sizeChange = { setSize() }
@@ -88,15 +91,15 @@ class Sky(context: Context, private var wm: WindowManager) {
         setSize()
     }
 
-    val rootListener: (v: View, event: MotionEvent) -> Boolean = { _, event ->
-        when (event.action) {
+    val rootListener: (action: Int, x: Float, y: Float) -> Boolean = { action, x, y ->
+        when (action) {
             MotionEvent.ACTION_DOWN -> {
-                startWindow(event)
-                startSkyLine(event)
+                startWindow()
+                startSkyLine(x, y)
                 true
             }
             MotionEvent.ACTION_MOVE -> {
-                linkStars(event)
+                linkStars(x, y)
                 true
             }
             MotionEvent.ACTION_UP -> {
@@ -132,7 +135,7 @@ class Sky(context: Context, private var wm: WindowManager) {
 
     private fun initWindow() {
         wlp.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-        wlp.format = PixelFormat.RGBA_8888;
+        wlp.format = RGBA_8888
         wlp.flags =
             WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                     WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
@@ -149,7 +152,7 @@ class Sky(context: Context, private var wm: WindowManager) {
 
     }
 
-    private fun startWindow(event: MotionEvent) {
+    private fun startWindow() {
         if (usermode == UserMode.ACTIVITY) return
         wlp.width = WindowManager.LayoutParams.MATCH_PARENT
         wlp.height = WindowManager.LayoutParams.MATCH_PARENT
@@ -158,23 +161,26 @@ class Sky(context: Context, private var wm: WindowManager) {
         wm.updateViewLayout(root, wlp)
     }
 
-    private fun startSkyLine(event: MotionEvent) {
-        startLP.setMargin(pointer.id, ConstraintSet.LEFT, event.rawX.toInt())
-        startLP.setMargin(pointer.id, ConstraintSet.TOP, event.rawY.toInt())
+    private fun startSkyLine(x: Float, y: Float) {
+        startLP.setMargin(pointer.id, ConstraintSet.LEFT, x.toInt())
+        startLP.setMargin(pointer.id, ConstraintSet.TOP, y.toInt())
         startLP.applyTo(root)
-        setCenter(event.rawX, event.rawY)
+        setCenter(x, y)
     }
 
-    private fun linkStars(event: MotionEvent) {
-        val dx = event.rawX - pointer.x
-        val dy = event.rawY - pointer.y
-        val ang = (Math.toDegrees(
-            atan2(dy * 1.0, dx * 1.0)
-        ) + 360 + 90 + SkyAttr.cwidth / 2).toInt() % 360 / (360 / SkyAttr.num)
+    private fun linkStars(x: Float, y: Float) {
+        val dx = x - pointer.x
+        val dy = y - pointer.y
+        val ang = (Math.toDegrees(atan2(dy * 1.0, dx * 1.0)) + 360 + 90) % 360
+        val ind = (ang + SkyAttr.cwidth).toInt() % 360 / (360 / SkyAttr.num)
         val dis = (dx * dx * 1.0 + dy * dy).pow(0.5)
-        Log.d("asdfasdf", "angle $ang $dis")
+        Log.d("asdfasdf", "angle $ang $dis  po ${pointer.x} ${pointer.y}")
         if (SkyAttr.length - SkyAttr.size / 2 < dis && dis < SkyAttr.length + SkyAttr.size / 2)
-            setCenter(event.rawX, event.rawY, subs(ang))
+            setCenter(
+                pointer.x + SkyAttr.length * sin(Math.toRadians(ind * 60.0)).toFloat(),
+                pointer.y - SkyAttr.length * cos(Math.toRadians(ind * 60.0)).toFloat(),
+                subs(ind)
+            )
     }
 
     private fun doAction() {}
