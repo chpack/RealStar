@@ -6,12 +6,18 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.view.ViewGroup
+import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var sky: Sky
+    var ss = arrayOf("asdasdf", "ffff", "qwerqwerqewr")
+
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,6 +34,17 @@ class MainActivity : AppCompatActivity() {
                 getPermis()
             }
         }
+
+        val mainIntent = Intent(Intent.ACTION_MAIN)
+        mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
+        var apps = packageManager.queryIntentActivities(mainIntent, 0)
+
+
+        var lm = LinearLayoutManager(this)
+        lists.layoutManager = lm
+
+        var listAdapter = AppListAdapter(ss)
+        lists.adapter = listAdapter
     }
 
 
@@ -47,5 +64,27 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+
+}
+
+class ViewH(var view: TextView) : RecyclerView.ViewHolder(view) {
+
+}
+
+class AppListAdapter(var apps: Array<String>) : RecyclerView.Adapter<ViewH>() {
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewH {
+        val t = TextView(parent.context)
+        return ViewH(t)
+    }
+
+    override fun getItemCount(): Int {
+        return apps.size
+    }
+
+    override fun onBindViewHolder(holder: ViewH, position: Int) {
+        holder.view.text = apps[position]
+    }
+
 
 }
