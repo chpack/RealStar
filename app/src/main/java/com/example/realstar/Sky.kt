@@ -3,6 +3,7 @@ package com.example.realstar
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.PixelFormat.RGBA_8888
+import android.graphics.drawable.Drawable
 import android.transition.TransitionManager
 import android.util.Log
 import android.view.MotionEvent
@@ -26,7 +27,7 @@ class Sky(context: Context, private var wm: WindowManager) {
      * @stars is the all stars, each one is image view, to show icons
      * @pointer is the touch position
      */
-    var root: ConstraintLayout =
+    private var root: ConstraintLayout =
         ConstraintLayout.inflate(context, R.layout.sky_layout, null) as ConstraintLayout
     private var stars: Array<ImageView> = arrayOf(
         root.findViewById(R.id.star_0),
@@ -64,6 +65,7 @@ class Sky(context: Context, private var wm: WindowManager) {
     private val currLP: ConstraintSet get() = swapLP[1 + indexLP % 2]
     private val nextLP: ConstraintSet get() = swapLP[1 + (indexLP + 1) % 2]
 
+    private var path = ""
 
     init {
         initWindow()
@@ -123,7 +125,9 @@ class Sky(context: Context, private var wm: WindowManager) {
         nextLP.constrainCircle(c.id, pointer.id, 0, 0f)
         var subi = 0
         stars.forEachIndexed { i, v ->
+            v.setDraw(SkyAttr.actions[path]?.drawable)
             if (c != v) {
+                v.setDraw(SkyAttr.actions[path + "$subi"]?.drawable)
                 nextLP.constrainCircle(v.id, c.id, SkyAttr.length, subi * 60f)
                 subStars[subi++] = i
             }
@@ -166,21 +170,27 @@ class Sky(context: Context, private var wm: WindowManager) {
         startLP.setMargin(pointer.id, ConstraintSet.TOP, y.toInt())
         startLP.applyTo(root)
         setCenter(x, y)
+
+        path = ""
     }
 
     private fun linkStars(x: Float, y: Float) {
         val dx = x - pointer.x
         val dy = y - pointer.y
+
         val ang = (Math.toDegrees(atan2(dy * 1.0, dx * 1.0)) + 360 + 90) % 360
         val ind = (ang + SkyAttr.cwidth / 2).toInt() % 360 / (360 / SkyAttr.num)
         val dis = (dx * dx * 1.0 + dy * dy).pow(0.5)
+
         Log.d("asdfasdf", "angle $ind $ang $dis  po ${pointer.x} ${pointer.y}")
-        if (SkyAttr.length - SkyAttr.size / 2 < dis && dis < SkyAttr.length + SkyAttr.size / 2)
+        if (SkyAttr.length - SkyAttr.size / 2 < dis && dis < SkyAttr.length + SkyAttr.size / 2) {
+            path += "$ind"
             setCenter(
                 pointer.x + SkyAttr.length * sin(Math.toRadians(ind * 60.0)).toFloat(),
                 pointer.y - SkyAttr.length * cos(Math.toRadians(ind * 60.0)).toFloat(),
                 subs(ind)
             )
+        }
     }
 
     private fun doAction() {}
@@ -203,4 +213,8 @@ class Sky(context: Context, private var wm: WindowManager) {
             }
         }
     }
+
+    private fun ImageView.setDraw(drawable: Drawable?) =
+        if (drawable != null) setImageDrawable(drawable)
+        else setImageResource(R.drawable.ic_launcher_background)
 }
