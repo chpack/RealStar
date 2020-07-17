@@ -172,9 +172,9 @@ class Sky(context: Context, private var wm: WindowManager) {
         val dx = x - pointer.x
         val dy = y - pointer.y
         val ang = (Math.toDegrees(atan2(dy * 1.0, dx * 1.0)) + 360 + 90) % 360
-        val ind = (ang + SkyAttr.cwidth).toInt() % 360 / (360 / SkyAttr.num)
+        val ind = (ang + SkyAttr.cwidth / 2).toInt() % 360 / (360 / SkyAttr.num)
         val dis = (dx * dx * 1.0 + dy * dy).pow(0.5)
-        Log.d("asdfasdf", "angle $ang $dis  po ${pointer.x} ${pointer.y}")
+        Log.d("asdfasdf", "angle $ind $ang $dis  po ${pointer.x} ${pointer.y}")
         if (SkyAttr.length - SkyAttr.size / 2 < dis && dis < SkyAttr.length + SkyAttr.size / 2)
             setCenter(
                 pointer.x + SkyAttr.length * sin(Math.toRadians(ind * 60.0)).toFloat(),
