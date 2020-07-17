@@ -3,22 +3,16 @@ package com.example.realstar
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.PixelFormat
+import android.transition.TransitionManager
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
-
-object SkyAttr {
-    var length = 200
-    var size = 100
-        set(value) {
-            field = value
-            sizeChange()
-        }
-    var sizeChange: () -> Unit = {}
-}
+import kotlin.math.atan2
+import kotlin.math.pow
 
 @SuppressLint("ClickableViewAccessibility")
 class Sky(context: Context, private var wm: WindowManager) {
@@ -32,15 +26,17 @@ class Sky(context: Context, private var wm: WindowManager) {
     var root: ConstraintLayout =
         ConstraintLayout.inflate(context, R.layout.sky_layout, null) as ConstraintLayout
     private var stars: Array<ImageView> = arrayOf(
-        root.findViewById<ImageView>(R.id.star_0),
-        root.findViewById<ImageView>(R.id.star_1),
-        root.findViewById<ImageView>(R.id.star_2),
-        root.findViewById<ImageView>(R.id.star_3),
-        root.findViewById<ImageView>(R.id.star_4),
-        root.findViewById<ImageView>(R.id.star_5),
-        root.findViewById<ImageView>(R.id.star_6)
+        root.findViewById(R.id.star_0),
+        root.findViewById(R.id.star_1),
+        root.findViewById(R.id.star_2),
+        root.findViewById(R.id.star_3),
+        root.findViewById(R.id.star_4),
+        root.findViewById(R.id.star_5),
+        root.findViewById(R.id.star_6)
     )
     private var pointer: View = root.findViewById<View>(R.id.pointer)
+    private var subStars = IntArray(6)
+    private fun subs(i: Int) = stars[subStars[i]]
 
     /**
      * UserMode mean operation mode.
@@ -92,10 +88,9 @@ class Sky(context: Context, private var wm: WindowManager) {
         setSize()
     }
 
-    val rootListener: (v: View, event: MotionEvent) -> Boolean = { v, event ->
+    val rootListener: (v: View, event: MotionEvent) -> Boolean = { _, event ->
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                setCenter(event.rawX, event.rawY)
                 startWindow(event)
                 startSkyLine(event)
                 true
@@ -120,13 +115,19 @@ class Sky(context: Context, private var wm: WindowManager) {
     }
 
     private fun setCenter(x: Float, y: Float, c: ImageView = stars[0]) {
-        currLP.constrainCircle(c.id, pointer.id, 0, 0f)
         nextLP.setMargin(pointer.id, ConstraintSet.LEFT, x.toInt())
         nextLP.setMargin(pointer.id, ConstraintSet.TOP, y.toInt())
+        nextLP.constrainCircle(c.id, pointer.id, 0, 0f)
+        var subi = 0
         stars.forEachIndexed { i, v ->
-            if (c != v)
-                nextLP.constrainCircle(v.id, c.id, SkyAttr.length, i * 60f)
+            if (c != v) {
+                nextLP.constrainCircle(v.id, c.id, SkyAttr.length, subi * 60f)
+                subStars[subi++] = i
+            }
         }
+        TransitionManager.beginDelayedTransition(root)
+        indexLP++
+        currLP.applyTo(root)
     }
 
     private fun initWindow() {
@@ -158,13 +159,22 @@ class Sky(context: Context, private var wm: WindowManager) {
     }
 
     private fun startSkyLine(event: MotionEvent) {
+        startLP.setMargin(pointer.id, ConstraintSet.LEFT, event.rawX.toInt())
+        startLP.setMargin(pointer.id, ConstraintSet.TOP, event.rawY.toInt())
         startLP.applyTo(root)
+        setCenter(event.rawX, event.rawY)
     }
 
     private fun linkStars(event: MotionEvent) {
-        setCenter(event.rawX, event.rawY)
-        indexLP++
-        currLP.applyTo(root)
+        val dx = event.rawX - pointer.x
+        val dy = event.rawY - pointer.y
+        val ang = (Math.toDegrees(
+            atan2(dy * 1.0, dx * 1.0)
+        ) + 360 + 90 + SkyAttr.cwidth / 2).toInt() % 360 / (360 / SkyAttr.num)
+        val dis = (dx * dx * 1.0 + dy * dy).pow(0.5)
+        Log.d("asdfasdf", "angle $ang $dis")
+        if (SkyAttr.length - SkyAttr.size / 2 < dis && dis < SkyAttr.length + SkyAttr.size / 2)
+            setCenter(event.rawX, event.rawY, subs(ang))
     }
 
     private fun doAction() {}
