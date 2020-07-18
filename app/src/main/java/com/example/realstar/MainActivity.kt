@@ -6,18 +6,18 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.app_list_item_layout.view.*
 
 class MainActivity : AppCompatActivity() {
 
     lateinit var sky: Sky
-    var ss = arrayOf("asdasdf", "ffff", "qwerqwerqewr")
-
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -34,21 +34,13 @@ class MainActivity : AppCompatActivity() {
                 getPermis()
             }
         }
-
-        val mainIntent = Intent(Intent.ACTION_MAIN)
-        mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
-        var apps = packageManager.queryIntentActivities(mainIntent, 0)
-
-
-        var lm = LinearLayoutManager(this)
-        lists.layoutManager = lm
-
-        var listAdapter = AppListAdapter(ss)
-        lists.adapter = listAdapter
+        SkyAttr.actions = ActionManager(this)
+        lists.layoutManager = LinearLayoutManager(this)
+        lists.adapter = AppListAdapter()
     }
 
 
-    fun getPermis() {
+    private fun getPermis() {
         val intent = Intent(Settings.ACTION_MANAGE_OVERLAY_PERMISSION)
         intent.data = Uri.parse("package:$packageName")
         startActivityForResult(intent, 1)
@@ -64,27 +56,53 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-
 }
 
-class ViewH(var view: TextView) : RecyclerView.ViewHolder(view) {
+class ViewH(root: ConstraintLayout) : RecyclerView.ViewHolder(root) {
+    private var icon = root.item_icon
+    private var title = root.item_title
+    private var line = root.item_gesture
+    private lateinit var action: EndAction
+    private var assign = root.item_assign
 
+    init {
+        root.item_assign.setOnClickListener {
+            if (action.line.isEmpty()) {
+                SkyAttr.actions.readToAssign = action
+                Log.d("asdfasdf", "on click")
+            } else {
+                SkyAttr.actions.delete(action)
+            }
+        }
+        icon.setOnClickListener {
+            SkyAttr.actions.launchApp(action)
+        }
+    }
+
+    fun reset(action: EndAction) {
+        this.action = action
+        icon.setImageDrawable(action.drawable)
+        title.text = action.title
+        line.text = action.line
+//        if (action.line.isEmpty())
+        if (action.title.length % 2 == 0)
+            assign.setImageResource(android.R.drawable.ic_input_add)
+        else
+            assign.setImageResource(android.R.drawable.ic_delete)
+    }
 }
 
-class AppListAdapter(var apps: Array<String>) : RecyclerView.Adapter<ViewH>() {
+class AppListAdapter() : RecyclerView.Adapter<ViewH>() {
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewH {
-        val t = TextView(parent.context)
-        return ViewH(t)
-    }
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewH =
+        ViewH(
+            LayoutInflater.from(parent.context)
+                .inflate(R.layout.app_list_item_layout, parent, false) as ConstraintLayout
+        )
 
-    override fun getItemCount(): Int {
-        return apps.size
-    }
+    override fun getItemCount(): Int = SkyAttr.actions.size
 
-    override fun onBindViewHolder(holder: ViewH, position: Int) {
-        holder.view.text = apps[position]
-    }
-
+    override fun onBindViewHolder(holder: ViewH, position: Int) =
+        holder.reset(SkyAttr.actions[position])
 
 }

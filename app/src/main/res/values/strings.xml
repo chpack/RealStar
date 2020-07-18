@@ -3,4 +3,10 @@
     <string name="show">show</string>
     <string name="dismiss">dismiss</string>
     <string name="icon">icon</string>
+    <string name="icon_of_app">Icon of app</string>
+    <string name="title">title</string>
+    <string name="gesture">gesture</string>
+    <string name="pack">package</string>
+    <string name="launch">Launch</string>
+    <string name="assign">Assign</string>
 </resources>

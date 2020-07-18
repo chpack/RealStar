@@ -14,5 +14,6 @@ object SkyAttr {
     val cwidth
         get() = 360 / num
 
-    val actions = HashMap<String, EndAction>()
+//    val actions = HashMap<String, EndAction>()
+    lateinit var actions :ActionManager
 }
