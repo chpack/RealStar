@@ -34,9 +34,13 @@ class MainActivity : AppCompatActivity() {
                 getPermis()
             }
         }
+
         SkyAttr.actions = ActionManager(this)
         lists.layoutManager = LinearLayoutManager(this)
         lists.adapter = AppListAdapter()
+
+        savebut.setOnClickListener { SkyAttr.actions.save() }
+        loadbut.setOnClickListener { SkyAttr.actions.load() }
     }
 
 
@@ -84,8 +88,7 @@ class ViewH(root: ConstraintLayout) : RecyclerView.ViewHolder(root) {
         icon.setImageDrawable(action.drawable)
         title.text = action.title
         line.text = action.line
-//        if (action.line.isEmpty())
-        if (action.title.length % 2 == 0)
+        if (action.line.isEmpty())
             assign.setImageResource(android.R.drawable.ic_input_add)
         else
             assign.setImageResource(android.R.drawable.ic_delete)

@@ -137,9 +137,13 @@ class Sky(context: Context, private var wm: WindowManager) {
         nextLP.setMargin(pointer.id, ConstraintSet.TOP, y.toInt())
         nextLP.constrainCircle(c.id, pointer.id, 0, 0f)
         var subi = 0
+//        c.setDraw(SkyAttr.actions[path]?.drawable)
         stars.forEachIndexed { i, v ->
-            v.setDraw(SkyAttr.actions[path]?.drawable)
             if (c != v) {
+                Log.d(
+                    "asdf",
+                    "${(SkyAttr.actions[path + "$subi"])}  ${SkyAttr.actions[path + "$subi"]?.drawable} $i $subi $path"
+                )
                 v.setDraw(SkyAttr.actions[path + "$subi"]?.drawable)
                 nextLP.constrainCircle(v.id, c.id, SkyAttr.length, subi * 60f)
                 subStars[subi++] = i
@@ -181,9 +185,8 @@ class Sky(context: Context, private var wm: WindowManager) {
         startLP.setMargin(pointer.id, ConstraintSet.LEFT, x.toInt())
         startLP.setMargin(pointer.id, ConstraintSet.TOP, y.toInt())
         startLP.applyTo(root)
-        setCenter(x, y)
-
         path = ""
+        setCenter(x, y)
     }
 
     private fun linkStars(x: Float, y: Float) {
@@ -204,7 +207,15 @@ class Sky(context: Context, private var wm: WindowManager) {
         }
     }
 
-    private fun doAction() {}
+    private fun doAction() {
+        if (path.isEmpty()) return
+
+        if (SkyAttr.actions.readToAssign != null)
+            SkyAttr.actions.assign(path)
+        else
+            SkyAttr.actions.launchApp(path)
+
+    }
 
     private fun endWindow() {
         setCenter(SkyAttr.size / 2f, SkyAttr.size / 2f)

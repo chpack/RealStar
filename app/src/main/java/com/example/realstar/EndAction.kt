@@ -37,17 +37,17 @@ data class EndAction(
 
     constructor(s: String) : this() {
         val ss = s.split('|')
-        title = ss[0]
-        args[0] = ss[1]
-        args[1] = ss[2]
-        line = ss[3]
-        type = Type.valueOf(ss[4])
+        title = ss[1]
+        args[0] = ss[2]
+        args[1] = ss[3]
+        line = ss[4]
+        type = Type.valueOf(ss[5])
     }
 
     constructor(r: ResolveInfo, pm: PackageManager) : this() {
         title = r.loadLabel(pm).toString()
         args[0] = r.activityInfo.name ?: ""
-        args[1] = r.activityInfo.packageName?: ""
+        args[1] = r.activityInfo.packageName ?: ""
         type = Type.APP
         drawable = r.loadIcon(pm)
     }

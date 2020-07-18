@@ -39,8 +39,9 @@ class ActionManager(var context: Context) {
         File(filePath).writeText(res)
     }
 
-    private fun load() {
+    fun load() {
         try {
+            Log.d("asdfasdf",filePath)
             File(filePath).readText().split("\n")
                 .forEach { if (it.isNotEmpty()) add(EndAction(it)) }
         } catch (e: FileNotFoundException) {
@@ -75,6 +76,10 @@ class ActionManager(var context: Context) {
         intent.component = ComponentName(action.pack, action.name)
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
+    }
+    fun launchApp(line:String) {
+        val a = get(line)
+        if(a != null) launchApp(a)
     }
 
 

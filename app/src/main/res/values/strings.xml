@@ -9,4 +9,6 @@
     <string name="pack">package</string>
     <string name="launch">Launch</string>
     <string name="assign">Assign</string>
+    <string name="save">save</string>
+    <string name="load">load</string>
 </resources>
