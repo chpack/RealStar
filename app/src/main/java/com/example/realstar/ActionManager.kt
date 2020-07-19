@@ -21,12 +21,20 @@ class ActionManager(var context: Context) {
 
     init {
         load()
-        val mainIntent = Intent(Intent.ACTION_MAIN)
-        mainIntent.addCategory(Intent.CATEGORY_LAUNCHER)
-        val apps = context.packageManager.queryIntentActivities(mainIntent, 0)
+        var mainIntent = Intent(Intent.ACTION_MAIN).apply { addCategory(Intent.CATEGORY_LAUNCHER) }
+        var apps = context.packageManager.queryIntentActivities(mainIntent, 0)
         apps.forEach { r ->
             if (r != null) {
                 val ea = EndAction(r, context.packageManager)
+                add(ea)
+            }
+        }
+        mainIntent = Intent(Intent.ACTION_MAIN).apply { addCategory(Intent.CATEGORY_DEFAULT) }
+        apps = context.packageManager.queryIntentActivities(mainIntent, 0)
+        apps.forEach { r ->
+            if (r != null) {
+                val ea = EndAction(r, context.packageManager)
+                ea.type = EndAction.Type.ACT
                 add(ea)
             }
         }

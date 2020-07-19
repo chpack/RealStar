@@ -11,4 +11,6 @@
     <string name="assign">Assign</string>
     <string name="save">save</string>
     <string name="load">load</string>
+    <string name="main_act">main act</string>
+    <string name="all_act">all act</string>
 </resources>

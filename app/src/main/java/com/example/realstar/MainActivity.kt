@@ -18,6 +18,7 @@ import kotlinx.android.synthetic.main.app_list_item_layout.view.*
 class MainActivity : AppCompatActivity() {
 
     lateinit var sky: Sky
+    lateinit var adapter: AppListAdapter
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -36,11 +37,18 @@ class MainActivity : AppCompatActivity() {
         }
 
         SkyAttr.actions = ActionManager(this)
+        adapter = AppListAdapter()
         lists.layoutManager = LinearLayoutManager(this)
-        lists.adapter = AppListAdapter()
+        lists.adapter = adapter
 
-        savebut.setOnClickListener { SkyAttr.actions.save() }
-        loadbut.setOnClickListener { SkyAttr.actions.load() }
+        show_launcher.setOnClickListener {
+            adapter.type = EndAction.Type.APP
+            adapter.notifyDataSetChanged()
+        }
+        show_all.setOnClickListener {
+            adapter.type = EndAction.Type.ACT
+            adapter.notifyDataSetChanged()
+        }
     }
 
 
@@ -96,6 +104,12 @@ class ViewH(root: ConstraintLayout) : RecyclerView.ViewHolder(root) {
 }
 
 class AppListAdapter() : RecyclerView.Adapter<ViewH>() {
+    var type = EndAction.Type.APP
+
+    var lists = HashMap<EndAction.Type, List<EndAction>>().apply {
+        EndAction.Type.values()
+            .forEach { type -> put(type, SkyAttr.actions.actions.filter { it.type == type }) }
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewH =
         ViewH(
@@ -103,9 +117,8 @@ class AppListAdapter() : RecyclerView.Adapter<ViewH>() {
                 .inflate(R.layout.app_list_item_layout, parent, false) as ConstraintLayout
         )
 
-    override fun getItemCount(): Int = SkyAttr.actions.size
+    override fun getItemCount(): Int = lists[type]!!.size
 
     override fun onBindViewHolder(holder: ViewH, position: Int) =
-        holder.reset(SkyAttr.actions[position])
-
+        holder.reset(lists[type]!![position])
 }
