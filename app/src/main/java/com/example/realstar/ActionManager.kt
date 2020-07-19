@@ -12,9 +12,6 @@ class ActionManager(var context: Context) {
     var actSet = HashSet<EndAction>()
     var actMap = HashMap<String, EndAction>()
 
-    val size
-        get() = actions.size
-
     var readToAssign: EndAction? = null
 
     private val filePath =

@@ -15,6 +15,8 @@ import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.app_list_item_layout.view.*
 
+lateinit var sa: SkyAttr
+
 class MainActivity : AppCompatActivity() {
 
     lateinit var sky: Sky
@@ -25,10 +27,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        sky = Sky(this, windowManager)
+        sa = (application as SkyApp).sa
+//        sky = Sky(this, windowManager)
 
         showbut.setOnClickListener {
-            Log.d("asdfasdf", "show click")
             if (Settings.canDrawOverlays(this)) {
 //                showFloat()
             } else {
@@ -36,7 +38,10 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
-        SkyAttr.actions = ActionManager(this)
+        startService(Intent(baseContext, SkyBack::class.java))
+
+        sa.actions = ActionManager(this)
+
         adapter = AppListAdapter()
         lists.layoutManager = LinearLayoutManager(this)
         lists.adapter = adapter
@@ -57,17 +62,6 @@ class MainActivity : AppCompatActivity() {
         intent.data = Uri.parse("package:$packageName")
         startActivityForResult(intent, 1)
     }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == 1) {
-            if (Settings.canDrawOverlays(this)) {
-                Log.d("asdfasdf", "success")
-            } else {
-                Log.d("asdfasdf", "failed")
-            }
-        }
-    }
 }
 
 class ViewH(root: ConstraintLayout) : RecyclerView.ViewHolder(root) {
@@ -81,14 +75,14 @@ class ViewH(root: ConstraintLayout) : RecyclerView.ViewHolder(root) {
     init {
         root.item_assign.setOnClickListener {
             if (action.line.isEmpty()) {
-                SkyAttr.actions.readToAssign = action
+                sa.actions.readToAssign = action
                 Log.d("asdfasdf", "on click")
             } else {
-                SkyAttr.actions.delete(action)
+                sa.actions.delete(action)
             }
         }
         icon.setOnClickListener {
-            SkyAttr.actions.launchApp(action)
+            sa.actions.launchApp(action)
         }
     }
 
@@ -110,7 +104,7 @@ class AppListAdapter() : RecyclerView.Adapter<ViewH>() {
 
     var lists = HashMap<EndAction.Type, List<EndAction>>().apply {
         EndAction.Type.values()
-            .forEach { type -> put(type, SkyAttr.actions.actions.filter { it.type == type }) }
+            .forEach { type -> put(type, sa.actions.actions.filter { it.type == type }) }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewH =

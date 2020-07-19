@@ -11,7 +11,7 @@ data class EndAction(
     var line: String = "",
     var type: Type = Type.APP
 ) {
-    enum class Type { NONE, APP, ACT}
+    enum class Type { NONE, APP, ACT }
 
     val name get() = args[0]
     val pack get() = args[1]

@@ -6,7 +6,6 @@ import android.graphics.PixelFormat.RGBA_8888
 import android.graphics.drawable.Drawable
 import android.transition.AutoTransition
 import android.transition.TransitionManager
-import android.util.Log
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
@@ -83,14 +82,13 @@ class Sky(context: Context, private var wm: WindowManager) {
                     true
                 }
                 else -> {
-                    Log.d("asdfasdf", "${event.downTime} ${event.eventTime}")
                     rootListener(event.action, event.rawX, event.rawY)
                 }
             }
 
         }
 
-        SkyAttr.sizeChange = { setSize() }
+        sa.sizeChange = { setSize() }
     }
 
     /**
@@ -141,12 +139,8 @@ class Sky(context: Context, private var wm: WindowManager) {
         var subi = 0
         stars.forEachIndexed { i, v ->
             if (c != v) {
-                Log.d(
-                    "asdf",
-                    "${(SkyAttr.actions[path + "$subi"])}  ${SkyAttr.actions[path + "$subi"]?.drawable} $i $subi $path"
-                )
-                v.setDraw(SkyAttr.actions[path + "$subi"]?.drawable)
-                nextLP.constrainCircle(v.id, c.id, SkyAttr.length, subi * 60f)
+                v.setDraw(sa.actions[path + "$subi"]?.drawable)
+                nextLP.constrainCircle(v.id, c.id, sa.length, subi * 60f)
                 subStars[subi++] = i
             }
         }
@@ -166,8 +160,8 @@ class Sky(context: Context, private var wm: WindowManager) {
                     WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR or
                     0
         wlp.gravity = Gravity.START or Gravity.TOP
-        wlp.width = SkyAttr.size
-        wlp.height = SkyAttr.size
+        wlp.width = sa.size
+        wlp.height = sa.size
         wlp.x = nx
         wlp.y = ny
         wm.addView(root, wlp)
@@ -200,14 +194,14 @@ class Sky(context: Context, private var wm: WindowManager) {
         val dy = y - pointer.y
 
         val ang = (Math.toDegrees(atan2(dy * 1.0, dx * 1.0)) + 360 + 90) % 360
-        val ind = (ang + SkyAttr.cwidth / 2).toInt() % 360 / (360 / SkyAttr.num)
+        val ind = (ang + sa.cwidth / 2).toInt() % 360 / (360 / sa.num)
         val dis = (dx * dx * 1.0 + dy * dy).pow(0.5)
 
-        if (SkyAttr.length - SkyAttr.size / 2 < dis && dis < SkyAttr.length + SkyAttr.size / 2) {
+        if (sa.length - sa.size / 2 < dis && dis < sa.length + sa.size / 2) {
             path += "$ind"
             setCenter(
-                pointer.x + SkyAttr.length * sin(Math.toRadians(ind * 60.0)).toFloat(),
-                pointer.y - SkyAttr.length * cos(Math.toRadians(ind * 60.0)).toFloat(),
+                pointer.x + sa.length * sin(Math.toRadians(ind * 60.0)).toFloat(),
+                pointer.y - sa.length * cos(Math.toRadians(ind * 60.0)).toFloat(),
                 subs(ind)
             )
         }
@@ -216,18 +210,18 @@ class Sky(context: Context, private var wm: WindowManager) {
     private fun doAction() {
         if (path.isEmpty()) return
 
-        if (SkyAttr.actions.readToAssign != null)
-            SkyAttr.actions.assign(path)
+        if (sa.actions.readToAssign != null)
+            sa.actions.assign(path)
         else
-            SkyAttr.actions.launchApp(path)
+            sa.actions.launchApp(path)
 
     }
 
     private fun endWindow() {
-        stars[0].setDraw(SkyAttr.actions[""]?.drawable)
-        setCenter(SkyAttr.size / 2f, SkyAttr.size / 2f)
-        wlp.width = SkyAttr.size
-        wlp.height = SkyAttr.size
+        stars[0].setDraw(sa.actions[""]?.drawable)
+        setCenter(sa.size / 2f, sa.size / 2f)
+        wlp.width = sa.size
+        wlp.height = sa.size
         wlp.x = nx
         wlp.y = ny
         wm.updateViewLayout(root, wlp)
@@ -236,8 +230,8 @@ class Sky(context: Context, private var wm: WindowManager) {
     private fun endSkyLine() {}
 
     private fun setWindow(x: Float, y: Float): Boolean {
-        nx = x.toInt() - SkyAttr.size / 2
-        ny = y.toInt() - SkyAttr.size / 2
+        nx = x.toInt() - sa.size / 2
+        ny = y.toInt() - sa.size / 2
         endWindow()
         return true
     }
@@ -245,8 +239,8 @@ class Sky(context: Context, private var wm: WindowManager) {
     private fun setSize() {
         stars.forEach { v ->
             swapLP.forEach { lp ->
-                lp.constrainWidth(v.id, SkyAttr.size)
-                lp.constrainHeight(v.id, SkyAttr.size)
+                lp.constrainWidth(v.id, sa.size)
+                lp.constrainHeight(v.id, sa.size)
             }
         }
     }

@@ -1,6 +1,6 @@
 package com.example.realstar
 
-object SkyAttr {
+class SkyAttr {
     var length = 200
     var size = 100
         set(value) {
@@ -14,5 +14,5 @@ object SkyAttr {
     val cwidth
         get() = 360 / num
 
-    lateinit var actions :ActionManager
+    lateinit var actions: ActionManager
 }
