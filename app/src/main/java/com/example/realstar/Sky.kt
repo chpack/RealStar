@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.PixelFormat.RGBA_8888
 import android.graphics.drawable.Drawable
+import android.transition.AutoTransition
 import android.transition.TransitionManager
 import android.util.Log
 import android.view.Gravity
@@ -13,6 +14,7 @@ import android.view.WindowManager
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.transition.doOnEnd
 import kotlinx.android.synthetic.main.sky_layout.view.*
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -137,7 +139,6 @@ class Sky(context: Context, private var wm: WindowManager) {
         nextLP.setMargin(pointer.id, ConstraintSet.TOP, y.toInt())
         nextLP.constrainCircle(c.id, pointer.id, 0, 0f)
         var subi = 0
-//        c.setDraw(SkyAttr.actions[path]?.drawable)
         stars.forEachIndexed { i, v ->
             if (c != v) {
                 Log.d(
@@ -149,7 +150,8 @@ class Sky(context: Context, private var wm: WindowManager) {
                 subStars[subi++] = i
             }
         }
-        TransitionManager.beginDelayedTransition(root)
+        val t = AutoTransition().apply { duration = 100 }
+        TransitionManager.beginDelayedTransition(root, t)
         indexLP++
         currLP.applyTo(root)
     }
@@ -182,11 +184,15 @@ class Sky(context: Context, private var wm: WindowManager) {
     }
 
     private fun startSkyLine(x: Float, y: Float) {
-        startLP.setMargin(pointer.id, ConstraintSet.LEFT, x.toInt())
-        startLP.setMargin(pointer.id, ConstraintSet.TOP, y.toInt())
-        startLP.applyTo(root)
         path = ""
-        setCenter(x, y)
+        startLP.setMargin(pointer.id, ConstraintSet.TOP, y.toInt())
+        startLP.setMargin(pointer.id, ConstraintSet.LEFT, x.toInt())
+        val t = AutoTransition().apply {
+            duration = 0
+            doOnEnd { setCenter(x, y) }
+        }
+        TransitionManager.beginDelayedTransition(root, t)
+        startLP.applyTo(root)
     }
 
     private fun linkStars(x: Float, y: Float) {
@@ -218,6 +224,7 @@ class Sky(context: Context, private var wm: WindowManager) {
     }
 
     private fun endWindow() {
+        stars[0].setDraw(SkyAttr.actions[""]?.drawable)
         setCenter(SkyAttr.size / 2f, SkyAttr.size / 2f)
         wlp.width = SkyAttr.size
         wlp.height = SkyAttr.size
