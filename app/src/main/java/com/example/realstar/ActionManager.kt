@@ -3,7 +3,6 @@ package com.example.realstar
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
-import android.util.Log
 import java.io.File
 import java.io.FileNotFoundException
 
@@ -41,12 +40,10 @@ class ActionManager(var context: Context) {
 
     fun load() {
         try {
-            Log.d("asdfasdf",filePath)
             File(filePath).readText().split("\n")
                 .forEach { if (it.isNotEmpty()) add(EndAction(it)) }
         } catch (e: FileNotFoundException) {
             save()
-            Log.d("asdfasdf", "filenot found")
         }
     }
 
@@ -64,11 +61,12 @@ class ActionManager(var context: Context) {
     }
 
     fun assign(line: String) {
-        if (readToAssign != null) {
-            readToAssign!!.line = line
-            actMap[line] = readToAssign!!
-            readToAssign = null
-        }
+        if (readToAssign == null) return
+        delete(line)
+        readToAssign!!.line = line
+        actMap[line] = readToAssign!!
+        save()
+        readToAssign = null
     }
 
     fun launchApp(action: EndAction) {
@@ -77,9 +75,10 @@ class ActionManager(var context: Context) {
         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         context.startActivity(intent)
     }
-    fun launchApp(line:String) {
+
+    fun launchApp(line: String) {
         val a = get(line)
-        if(a != null) launchApp(a)
+        if (a != null) launchApp(a)
     }
 
 
@@ -89,5 +88,13 @@ class ActionManager(var context: Context) {
     fun delete(action: EndAction) {
         actMap.remove(action.line)
         action.line = ""
+    }
+
+    fun delete(line: String) {
+        val ae = actMap[line]
+        if (ae != null) {
+            ae.line = ""
+            actMap.remove(line)
+        }
     }
 }
