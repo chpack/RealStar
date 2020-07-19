@@ -3,6 +3,7 @@ package com.example.realstar
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import java.io.File
 import java.io.FileNotFoundException
 
@@ -80,8 +81,11 @@ class ActionManager(var context: Context) {
     fun launchApp(action: EndAction) {
         val intent = Intent()
         intent.component = ComponentName(action.pack, action.name)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        context.startActivity(intent)
+        try {
+            context.startActivity(intent)
+        } catch (e: Exception) {
+            Toast.makeText(context, "Can't launch activity ${e.message}", Toast.LENGTH_LONG).show()
+        }
     }
 
     fun launchApp(line: String) {

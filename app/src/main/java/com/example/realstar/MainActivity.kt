@@ -76,6 +76,7 @@ class ViewH(root: ConstraintLayout) : RecyclerView.ViewHolder(root) {
     private var line = root.item_gesture
     private lateinit var action: EndAction
     private var assign = root.item_assign
+    private var info = root.item_info
 
     init {
         root.item_assign.setOnClickListener {
@@ -96,6 +97,7 @@ class ViewH(root: ConstraintLayout) : RecyclerView.ViewHolder(root) {
         icon.setImageDrawable(action.drawable)
         title.text = action.title
         line.text = action.line
+        info.text = action.name.removePrefix(action.pack)
         if (action.line.isEmpty())
             assign.setImageResource(android.R.drawable.ic_input_add)
         else
