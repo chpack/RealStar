@@ -65,34 +65,38 @@ class Sky(context: Context, private var wm: WindowManager) {
 
     private var path = ""
 
+    private val rootListener = { v: View?, event: MotionEvent? ->
+        when {
+            v == null || event == null -> false
+
+            event.action == MotionEvent.ACTION_UP && event.eventTime - event.downTime < sa.moveDuring -> {
+                moveMode = true
+                actionListener(MotionEvent.ACTION_CANCEL, event.rawX, event.rawY)
+            }
+
+            moveMode && event.action != MotionEvent.ACTION_UP ->
+                setWindow(event.rawX, event.rawY)
+
+            moveMode && event.action == MotionEvent.ACTION_UP -> {
+                moveMode = false
+                true
+            }
+
+            else -> {
+                actionListener(event.action, event.rawX, event.rawY)
+            }
+        }
+    }
+
     init {
         initWindow()
         initLPs()
-        root.setOnTouchListener { v, event ->
-            when {
-                v == null || event == null -> false
-
-                event.action == MotionEvent.ACTION_UP && event.eventTime - event.downTime < sa.moveDuring -> {
-                    moveMode = true
-                    rootListener(MotionEvent.ACTION_CANCEL, event.rawX, event.rawY)
-                }
-
-                moveMode && event.action != MotionEvent.ACTION_UP ->
-                    setWindow(event.rawX, event.rawY)
-
-                moveMode && event.action == MotionEvent.ACTION_UP -> {
-                    moveMode = false
-                    true
-                }
-
-                else -> {
-                    rootListener(event.action, event.rawX, event.rawY)
-                }
-            }
-        }
+        root.setOnTouchListener(rootListener)
 
         sa.sizeChange = { setSize() }
+        sa.load(context)
     }
+
 
     /**
      * init LayoutParams
@@ -109,7 +113,7 @@ class Sky(context: Context, private var wm: WindowManager) {
         setSize()
     }
 
-    val rootListener: (action: Int, x: Float, y: Float) -> Boolean = { action, x, y ->
+    val actionListener: (action: Int, x: Float, y: Float) -> Boolean = { action, x, y ->
         when (action) {
             MotionEvent.ACTION_DOWN -> {
                 startWindow()
@@ -234,7 +238,6 @@ class Sky(context: Context, private var wm: WindowManager) {
     private fun setSize() {
         stars.forEach { v ->
             swapLP.forEach { lp ->
-                if (lp == startLP) return
                 lp.constrainWidth(v.id, sa.size)
                 lp.constrainHeight(v.id, sa.size)
             }
