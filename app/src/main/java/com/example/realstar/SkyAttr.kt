@@ -15,4 +15,6 @@ class SkyAttr {
         get() = 360 / num
 
     lateinit var actions: ActionManager
+
+    var moveDuring = 150
 }

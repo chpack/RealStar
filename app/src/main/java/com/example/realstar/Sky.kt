@@ -71,7 +71,7 @@ class Sky(context: Context, private var wm: WindowManager) {
         root.setOnTouchListener { v, event ->
             when {
                 v == null || event == null -> false
-                event.action == MotionEvent.ACTION_UP && event.eventTime - event.downTime < 500 -> {
+                event.action == MotionEvent.ACTION_UP && event.eventTime - event.downTime < sa.moveDuring -> {
                     moveMode = true
                     rootListener(MotionEvent.ACTION_CANCEL, event.rawX, event.rawY)
                 }

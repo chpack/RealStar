@@ -4,7 +4,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.provider.Settings
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
@@ -64,7 +63,6 @@ class ViewH(root: ConstraintLayout) : RecyclerView.ViewHolder(root) {
         root.item_assign.setOnClickListener {
             if (action.line.isEmpty()) {
                 sa.actions.readToAssign = action
-                Log.d("asdfasdf", "on click")
             } else {
                 sa.actions.delete(action)
             }

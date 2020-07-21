@@ -16,6 +16,8 @@ class MainActivity : AppCompatActivity() {
 
         sa = (application as SkyApp).sa
         startService(Intent(baseContext, SkyBack::class.java))
+
+        startActivity(Intent(baseContext, SettingsActivity::class.java))
     }
 }
 

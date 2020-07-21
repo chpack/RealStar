@@ -1,0 +1,33 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android"
+    app:key="@string/preference_file_key"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <PreferenceCategory app:title="@string/star_attr">
+
+        <SeekBarPreference
+            android:max="400"
+            app:defaultValue="100"
+            app:key="icon_size"
+            app:min="10"
+            app:showSeekBarValue="true"
+            app:title="@string/star_size_title" />
+
+        <SeekBarPreference
+            android:max="400"
+            app:defaultValue="150"
+            app:key="icon_length"
+            app:min="50"
+            app:showSeekBarValue="true"
+            app:title="@string/star_length_title" />
+
+        <SeekBarPreference
+            android:max="300"
+            app:defaultValue="150"
+            app:key="move_during"
+            app:min="0"
+            app:showSeekBarValue="true"
+            app:title="@string/move_mode" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>
