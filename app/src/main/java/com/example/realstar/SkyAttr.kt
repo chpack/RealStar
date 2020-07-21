@@ -21,9 +21,14 @@ class SkyAttr {
 
     var moveDuring = 150
 
+    var nx = 100
+    var ny = 100
+
     fun load(context: Context) = PreferenceManager.getDefaultSharedPreferences(context).apply {
         length = getInt("icon_length", 200)
         size = getInt("icon_size", 100)
         moveDuring = getInt("move_during", 150)
+        nx = getInt("window_x", 100)
+        ny = getInt("window_y", 100)
     }
 }

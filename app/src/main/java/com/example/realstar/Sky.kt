@@ -14,6 +14,7 @@ import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.core.transition.doOnEnd
+import androidx.preference.PreferenceManager
 import kotlinx.android.synthetic.main.sky_layout.view.*
 import kotlin.math.atan2
 import kotlin.math.cos
@@ -48,9 +49,8 @@ class Sky(context: Context, private var wm: WindowManager) {
 
     private var usermode = UserMode.FLOAT
     private var wlp = WindowManager.LayoutParams()
-    private var nx = 100
-    private var ny = 100
     private var moveMode = false
+    private var sp = PreferenceManager.getDefaultSharedPreferences(context).edit()
 
     /**
      * Layout of all sectuin
@@ -89,12 +89,12 @@ class Sky(context: Context, private var wm: WindowManager) {
     }
 
     init {
+        sa.sizeChange = { setSize() }
+        sa.load(context)
+
         initWindow()
         initLPs()
         root.setOnTouchListener(rootListener)
-
-        sa.sizeChange = { setSize() }
-        sa.load(context)
     }
 
 
@@ -170,8 +170,8 @@ class Sky(context: Context, private var wm: WindowManager) {
             gravity = Gravity.START or Gravity.TOP
             width = sa.size
             height = sa.size
-            x = nx
-            y = ny
+            x = sa.nx
+            y = sa.ny
         }
         wm.addView(root, wlp)
 
@@ -229,8 +229,11 @@ class Sky(context: Context, private var wm: WindowManager) {
     private fun endSkyLine() {}
 
     private fun setWindow(x: Float, y: Float): Boolean {
-        nx = x.toInt() - sa.size / 2
-        ny = y.toInt() - sa.size / 2
+        sa.nx = x.toInt() - sa.size / 2
+        sa.ny = y.toInt() - sa.size / 2
+        sp.putInt("window_x", sa.nx)
+        sp.putInt("window_y", sa.ny)
+        sp.commit()
         endWindow()
         return true
     }
@@ -251,8 +254,8 @@ class Sky(context: Context, private var wm: WindowManager) {
     private fun WindowManager.LayoutParams.switchMode(m: Boolean) {
         width = if (m) sa.size else WindowManager.LayoutParams.MATCH_PARENT
         height = if (m) sa.size else WindowManager.LayoutParams.MATCH_PARENT
-        x = nx
-        y = ny
+        x = sa.nx
+        y = sa.ny
         wm.updateViewLayout(root, this)
     }
 }
