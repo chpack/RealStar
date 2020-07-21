@@ -78,6 +78,7 @@ class ActionManager(var context: Context) {
     fun launchApp(action: EndAction) {
         val intent = Intent()
         intent.component = ComponentName(action.pack, action.name)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
         try {
             context.startActivity(intent)
         } catch (e: Exception) {
