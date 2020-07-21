@@ -25,8 +25,8 @@ class SkyBack : Service() {
 
         val pi: PendingIntent = Intent(this, MainActivity::class.java).let {
             PendingIntent.getActivity(this, 0, it, 0)
-
         }
+
         val notification = Notification.Builder(this, "asdf")
             .setContentTitle("Keep alive")
             .setContentText("Kepp alive")

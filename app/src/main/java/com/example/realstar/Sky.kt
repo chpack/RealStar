@@ -71,21 +71,24 @@ class Sky(context: Context, private var wm: WindowManager) {
         root.setOnTouchListener { v, event ->
             when {
                 v == null || event == null -> false
+
                 event.action == MotionEvent.ACTION_UP && event.eventTime - event.downTime < sa.moveDuring -> {
                     moveMode = true
                     rootListener(MotionEvent.ACTION_CANCEL, event.rawX, event.rawY)
                 }
+
                 moveMode && event.action != MotionEvent.ACTION_UP ->
                     setWindow(event.rawX, event.rawY)
+
                 moveMode && event.action == MotionEvent.ACTION_UP -> {
                     moveMode = false
                     true
                 }
+
                 else -> {
                     rootListener(event.action, event.rawX, event.rawY)
                 }
             }
-
         }
 
         sa.sizeChange = { setSize() }
@@ -133,16 +136,17 @@ class Sky(context: Context, private var wm: WindowManager) {
     }
 
     private fun setCenter(x: Float, y: Float, c: ImageView = stars[0]) {
-        nextLP.setMargin(pointer.id, ConstraintSet.LEFT, x.toInt())
-        nextLP.setMargin(pointer.id, ConstraintSet.TOP, y.toInt())
-        nextLP.constrainCircle(c.id, pointer.id, 0, 0f)
+        nextLP.apply {
+            setMargin(pointer.id, ConstraintSet.LEFT, x.toInt())
+            setMargin(pointer.id, ConstraintSet.TOP, y.toInt())
+            constrainCircle(c.id, pointer.id, 0, 0f)
+        }
         var subi = 0
         stars.forEachIndexed { i, v ->
-            if (c != v) {
-                v.setDraw(sa.actions[path + "$subi"]?.drawable)
-                nextLP.constrainCircle(v.id, c.id, sa.length, subi * 60f)
-                subStars[subi++] = i
-            }
+            if (c == v) return@forEachIndexed
+            v.setDraw(sa.actions[path + "$subi"]?.drawable)
+            nextLP.constrainCircle(v.id, c.id, sa.length, subi * 60f)
+            subStars[subi++] = i
         }
         val t = AutoTransition().apply { duration = 100 }
         TransitionManager.beginDelayedTransition(root, t)
@@ -151,41 +155,37 @@ class Sky(context: Context, private var wm: WindowManager) {
     }
 
     private fun initWindow() {
-        wlp.type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
-        wlp.format = RGBA_8888
-        wlp.flags =
-            WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
+        wlp.apply {
+            type = WindowManager.LayoutParams.TYPE_APPLICATION_OVERLAY
+            format = RGBA_8888
+            flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                     WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
                     WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR or
                     0
-        wlp.gravity = Gravity.START or Gravity.TOP
-        wlp.width = sa.size
-        wlp.height = sa.size
-        wlp.x = nx
-        wlp.y = ny
+            gravity = Gravity.START or Gravity.TOP
+            width = sa.size
+            height = sa.size
+            x = nx
+            y = ny
+        }
         wm.addView(root, wlp)
 
     }
 
     private fun startWindow() {
         if (usermode == UserMode.ACTIVITY) return
-        wlp.width = WindowManager.LayoutParams.MATCH_PARENT
-        wlp.height = WindowManager.LayoutParams.MATCH_PARENT
-        wlp.x = nx
-        wlp.y = ny
-        wm.updateViewLayout(root, wlp)
+        wlp.switchMode(false)
     }
 
     private fun startSkyLine(x: Float, y: Float) {
         path = ""
         startLP.setMargin(pointer.id, ConstraintSet.TOP, y.toInt())
         startLP.setMargin(pointer.id, ConstraintSet.LEFT, x.toInt())
-        val t = AutoTransition().apply {
+        TransitionManager.beginDelayedTransition(root, AutoTransition().apply {
             duration = 0
             doOnEnd { setCenter(x, y) }
-        }
-        TransitionManager.beginDelayedTransition(root, t)
+        })
         startLP.applyTo(root)
     }
 
@@ -210,21 +210,16 @@ class Sky(context: Context, private var wm: WindowManager) {
     private fun doAction() {
         if (path.isEmpty()) return
 
-        if (sa.actions.readToAssign != null)
-            sa.actions.assign(path)
-        else
-            sa.actions.launchApp(path)
-
+        sa.actions.apply {
+            if (readToAssign != null) assign(path)
+            else launchApp(path)
+        }
     }
 
     private fun endWindow() {
         stars[0].setDraw(sa.actions[""]?.drawable)
         setCenter(sa.size / 2f, sa.size / 2f)
-        wlp.width = sa.size
-        wlp.height = sa.size
-        wlp.x = nx
-        wlp.y = ny
-        wm.updateViewLayout(root, wlp)
+        wlp.switchMode(true)
     }
 
     private fun endSkyLine() {}
@@ -239,6 +234,7 @@ class Sky(context: Context, private var wm: WindowManager) {
     private fun setSize() {
         stars.forEach { v ->
             swapLP.forEach { lp ->
+                if (lp == startLP) return
                 lp.constrainWidth(v.id, sa.size)
                 lp.constrainHeight(v.id, sa.size)
             }
@@ -248,4 +244,12 @@ class Sky(context: Context, private var wm: WindowManager) {
     private fun ImageView.setDraw(drawable: Drawable?) =
         if (drawable != null) setImageDrawable(drawable)
         else setImageResource(R.drawable.ic_launcher_background)
+
+    private fun WindowManager.LayoutParams.switchMode(m: Boolean) {
+        width = if (m) sa.size else WindowManager.LayoutParams.MATCH_PARENT
+        height = if (m) sa.size else WindowManager.LayoutParams.MATCH_PARENT
+        x = nx
+        y = ny
+        wm.updateViewLayout(root, this)
+    }
 }

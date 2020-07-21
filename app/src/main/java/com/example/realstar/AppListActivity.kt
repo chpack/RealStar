@@ -78,10 +78,11 @@ class ViewH(root: ConstraintLayout) : RecyclerView.ViewHolder(root) {
         title.text = action.title
         line.text = action.line
         info.text = action.name.removePrefix(action.pack)
-        if (action.line.isEmpty())
-            assign.setImageResource(android.R.drawable.ic_input_add)
-        else
-            assign.setImageResource(android.R.drawable.ic_delete)
+
+        assign.setImageResource(
+            if (action.line.isEmpty()) android.R.drawable.ic_input_add
+            else android.R.drawable.ic_delete
+        )
     }
 }
 

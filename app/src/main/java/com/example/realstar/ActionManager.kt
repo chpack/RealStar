@@ -19,21 +19,20 @@ class ActionManager(var context: Context) {
 
     init {
         load()
-        var mainIntent = Intent(Intent.ACTION_MAIN).apply { addCategory(Intent.CATEGORY_LAUNCHER) }
-        var apps = context.packageManager.queryIntentActivities(mainIntent, 0)
-        apps.forEach { r ->
-            if (r != null) {
-                val ea = EndAction(r, context.packageManager)
-                add(ea)
+        context.packageManager.queryIntentActivities(
+            Intent(Intent.ACTION_MAIN).apply { addCategory(Intent.CATEGORY_LAUNCHER) }, 0
+        ).forEach {
+            it?.let {
+                add(EndAction(it, context.packageManager))
             }
         }
-        mainIntent = Intent(Intent.ACTION_MAIN).apply { addCategory(Intent.CATEGORY_DEFAULT) }
-        apps = context.packageManager.queryIntentActivities(mainIntent, 0)
-        apps.forEach { r ->
-            if (r != null) {
-                val ea = EndAction(r, context.packageManager)
-                ea.type = EndAction.Type.ACT
-                add(ea)
+
+        context.packageManager.queryIntentActivities(
+            Intent(Intent.ACTION_MAIN).apply { addCategory(Intent.CATEGORY_DEFAULT) }, 0
+        ).forEach {
+            it?.let {
+                add(EndAction(it, context.packageManager)
+                    .apply { type = EndAction.Type.ACT })
             }
         }
     }
@@ -44,17 +43,15 @@ class ActionManager(var context: Context) {
         File(filePath).writeText(res)
     }
 
-    fun load() {
-        try {
-            File(filePath).readText().split("\n")
-                .forEach { if (it.isNotEmpty()) add(EndAction(it)) }
-        } catch (e: FileNotFoundException) {
-            save()
-        }
+    fun load() = try {
+        File(filePath).readText().split("\n")
+            .forEach { if (it.isNotEmpty()) add(EndAction(it)) }
+    } catch (e: FileNotFoundException) {
+        save()
     }
 
     private fun add(ea: EndAction) {
-        if (actSet.contains(ea)) return
+        if(ea in actSet) return
 
         if (ea.line.isNotEmpty())
             actMap[ea.line] = ea
@@ -66,31 +63,24 @@ class ActionManager(var context: Context) {
                 .loadIcon(context.packageManager)
     }
 
-    fun assign(line: String) {
-        if (readToAssign == null) return
+    fun assign(line: String) = readToAssign?.let {
         delete(line)
-        readToAssign!!.line = line
-        actMap[line] = readToAssign!!
+        it.line = line
+        actMap[line] = it
         save()
         readToAssign = null
     }
 
-    fun launchApp(action: EndAction) {
-        val intent = Intent()
-        intent.component = ComponentName(action.pack, action.name)
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-        try {
-            context.startActivity(intent)
-        } catch (e: Exception) {
-            Toast.makeText(context, "Can't launch activity ${e.message}", Toast.LENGTH_LONG).show()
-        }
+    fun launchApp(action: EndAction) = try {
+        context.startActivity(Intent().apply {
+            component = ComponentName(action.pack, action.name)
+            addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+        })
+    } catch (e: Exception) {
+        Toast.makeText(context, "Can't launch activity ${e.message}", Toast.LENGTH_LONG).show()
     }
 
-    fun launchApp(line: String) {
-        val a = get(line)
-        if (a != null) launchApp(a)
-    }
-
+    fun launchApp(line: String) = get(line)?.let { launchApp(it) }
 
     operator fun get(line: String): EndAction? = actMap[line]
     operator fun get(ind: Int): EndAction = actions[ind]
@@ -100,11 +90,8 @@ class ActionManager(var context: Context) {
         action.line = ""
     }
 
-    fun delete(line: String) {
-        val ae = actMap[line]
-        if (ae != null) {
-            ae.line = ""
-            actMap.remove(line)
-        }
+    fun delete(line: String) = actMap[line]?.let {
+        actMap.remove(line)
+        it.line = ""
     }
 }
