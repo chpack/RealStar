@@ -21,10 +21,9 @@ class SkyBack : Service() {
             NotificationChannel(
                 "Controller",
                 "Controller",
-                NotificationManager.IMPORTANCE_DEFAULT
+                NotificationManager.IMPORTANCE_LOW
             ).apply {
                 description = "Simple control Sky Launcher"
-                importance = NotificationManager.IMPORTANCE_LOW
             }
         )
 
