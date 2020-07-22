@@ -18,25 +18,57 @@ class SkyBack : Service() {
 
         val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         nm.createNotificationChannel(
-            NotificationChannel("asdf", "asdfasdf", NotificationManager.IMPORTANCE_DEFAULT).apply {
-                description = "test text"
+            NotificationChannel(
+                "Controller",
+                "Controller",
+                NotificationManager.IMPORTANCE_DEFAULT
+            ).apply {
+                description = "Simple control Sky Launcher"
+                importance = NotificationManager.IMPORTANCE_LOW
             }
         )
 
-        val pi: PendingIntent = Intent(this, MainActivity::class.java).let {
+        val settingPi: PendingIntent = Intent(this, SettingsActivity::class.java).let {
             PendingIntent.getActivity(this, 0, it, 0)
         }
 
-        val notification = Notification.Builder(this, "asdf")
-            .setContentTitle("Keep alive")
-            .setContentText("Kepp alive")
+        val appListPI: PendingIntent = Intent(this, AppListActivity::class.java).let {
+            PendingIntent.getActivity(this, 0, it, 0)
+        }
+
+        val hidePI: PendingIntent = Intent(this, SkyBack::class.java).let {
+            it.putExtra("action", "hide")
+            PendingIntent.getService(this, 0, it, 0)
+        }
+
+        val exitPI: PendingIntent = Intent(this, SkyBack::class.java).let {
+            it.putExtra("action", "stop")
+            PendingIntent.getService(this, 0, it, 0)
+        }
+
+        val notification = Notification.Builder(this, "Controller")
+            .setContentTitle("Real Star Launcher")
+            .setContentText("Touch to hide")
             .setSmallIcon(R.drawable.ic_launcher_background)
             .setLargeIcon(Icon.createWithResource(this, R.drawable.ic_launcher_background))
-            .setContentIntent(pi)
+            .setContentIntent(hidePI)
             .setTicker("Keep alive")
+            .addAction(Notification.Action.Builder(null, "App List", appListPI).build())
+            .addAction(Notification.Action.Builder(null, "Setting", settingPi).build())
+            .addAction(Notification.Action.Builder(null, "Exit", exitPI).build())
             .build()
 
         startForeground(1, notification)
+    }
+
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        intent?.extras?.let {
+            when (it["action"]) {
+                "stop" -> stopSelf()
+                "hide" -> sky.hide()
+            }
+        }
+        return super.onStartCommand(intent, flags, startId)
     }
 
     override fun onBind(intent: Intent?): IBinder? {

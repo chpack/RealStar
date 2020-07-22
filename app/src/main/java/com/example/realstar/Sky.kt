@@ -179,7 +179,7 @@ class Sky(context: Context, private var wm: WindowManager) {
 
     private fun startWindow() {
         if (usermode == UserMode.ACTIVITY) return
-        wlp.switchMode(false)
+        wlp.switchMode(WindowMode.FULL)
     }
 
     private fun startSkyLine(x: Float, y: Float) {
@@ -223,7 +223,7 @@ class Sky(context: Context, private var wm: WindowManager) {
     private fun endWindow() {
         stars[0].setDraw(sa.actions[""]?.drawable)
         setCenter(sa.size / 2f, sa.size / 2f)
-        wlp.switchMode(true)
+        wlp.switchMode(WindowMode.COMPACT)
     }
 
     private fun endSkyLine() {}
@@ -251,11 +251,24 @@ class Sky(context: Context, private var wm: WindowManager) {
         if (drawable != null) setImageDrawable(drawable)
         else setImageResource(R.drawable.ic_launcher_background)
 
-    private fun WindowManager.LayoutParams.switchMode(m: Boolean) {
-        width = if (m) sa.size else WindowManager.LayoutParams.MATCH_PARENT
-        height = if (m) sa.size else WindowManager.LayoutParams.MATCH_PARENT
+    enum class WindowMode { COMPACT, HIDE, FULL }
+
+    private var windowMode = WindowMode.COMPACT
+
+    private fun WindowManager.LayoutParams.switchMode(m: WindowMode) {
+        windowMode = m
+        width = when (m) {
+            WindowMode.COMPACT -> sa.size
+            WindowMode.HIDE -> 0
+            WindowMode.FULL -> WindowManager.LayoutParams.MATCH_PARENT
+        }
+        height = width
         x = sa.nx
         y = sa.ny
         wm.updateViewLayout(root, this)
     }
+
+    fun hide() =
+        if (windowMode == WindowMode.HIDE) wlp.switchMode(WindowMode.COMPACT)
+        else wlp.switchMode(WindowMode.HIDE)
 }
