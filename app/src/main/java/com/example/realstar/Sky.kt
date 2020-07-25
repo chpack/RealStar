@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.PixelFormat.RGBA_8888
 import android.graphics.drawable.Drawable
-import android.transition.AutoTransition
-import android.transition.TransitionManager
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
@@ -13,13 +11,11 @@ import android.view.WindowManager
 import android.widget.ImageView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.core.transition.doOnEnd
+import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.preference.PreferenceManager
 import kotlinx.android.synthetic.main.sky_layout.view.*
 import kotlin.math.atan2
-import kotlin.math.cos
 import kotlin.math.pow
-import kotlin.math.sin
 
 
 @SuppressLint("ClickableViewAccessibility")
@@ -36,7 +32,7 @@ class Sky(context: Context, private var wm: WindowManager) {
     private var stars: Array<ImageView> = arrayOf(
         root.star_0, root.star_1, root.star_2, root.star_3, root.star_4, root.star_5, root.star_6
     )
-    private var pointer: View = root.pointer
+
     private var subStars = IntArray(6)
     private fun subs(i: Int) = stars[subStars[i]]
 
@@ -56,12 +52,13 @@ class Sky(context: Context, private var wm: WindowManager) {
      * Layout of all sectuin
      * @startLP is the first layout
      */
-    private var indexLP = 0
-    private var swapLP = arrayOf(ConstraintSet(), ConstraintSet(), ConstraintSet())
+    var layout = ConstraintSet()
 
-    private val startLP: ConstraintSet get() = swapLP[0]
-    private val currLP: ConstraintSet get() = swapLP[1 + indexLP % 2]
-    private val nextLP: ConstraintSet get() = swapLP[1 + (indexLP + 1) % 2]
+    private var xAnim = Array(sa.num + 1) { SpringAnimation(stars[it], SpringAnimation.X) }
+    private var yAnim = Array(sa.num + 1) { SpringAnimation(stars[it], SpringAnimation.Y) }
+
+    var xLast = 0f
+    var yLast = 0f
 
     private var path = ""
 
@@ -102,22 +99,15 @@ class Sky(context: Context, private var wm: WindowManager) {
      * init LayoutParams
      */
     private fun initLPs() {
-        swapLP.forEach { cs -> cs.clone(root) }
-
-        startLP.constrainCircle(stars[0].id, pointer.id, 0, 0f)
-        stars.forEach { v ->
-            if (v != stars[0])
-                startLP.constrainCircle(v.id, stars[0].id, 0, 0f)
-        }
-
+        layout.clone(root)
         setSize()
     }
 
     val actionListener: (action: Int, x: Float, y: Float) -> Boolean = { action, x, y ->
         when (action) {
             MotionEvent.ACTION_DOWN -> {
-                startWindow()
                 startSkyLine(x, y)
+                startWindow()
                 true
             }
             MotionEvent.ACTION_MOVE -> {
@@ -140,22 +130,20 @@ class Sky(context: Context, private var wm: WindowManager) {
     }
 
     private fun setCenter(x: Float, y: Float, c: ImageView = stars[0]) {
-        nextLP.apply {
-            setMargin(pointer.id, ConstraintSet.LEFT, x.toInt())
-            setMargin(pointer.id, ConstraintSet.TOP, y.toInt())
-            constrainCircle(c.id, pointer.id, 0, 0f)
-        }
         var subi = 0
         stars.forEachIndexed { i, v ->
-            if (c == v) return@forEachIndexed
-            v.setDraw(sa.actions[path + "$subi"]?.drawable)
-            nextLP.constrainCircle(v.id, c.id, sa.length, subi * 60f)
-            subStars[subi++] = i
+            if (c == v) {
+                xAnim[i].animateToFinalPosition(x + sa.cw)
+                yAnim[i].animateToFinalPosition(y + sa.cw)
+            } else {
+                v.setDraw(sa.actions[path + "$subi"]?.drawable)
+                xAnim[i].animateToFinalPosition(x + sa.dx[subi] + sa.cw)
+                yAnim[i].animateToFinalPosition(y + sa.dy[subi] + sa.cw)
+                subStars[subi++] = i
+            }
         }
-        val t = AutoTransition().apply { duration = 100 }
-        TransitionManager.beginDelayedTransition(root, t)
-        indexLP++
-        currLP.applyTo(root)
+        xLast = x
+        yLast = y
     }
 
     private fun initWindow() {
@@ -184,18 +172,17 @@ class Sky(context: Context, private var wm: WindowManager) {
 
     private fun startSkyLine(x: Float, y: Float) {
         path = ""
-        startLP.setMargin(pointer.id, ConstraintSet.TOP, y.toInt())
-        startLP.setMargin(pointer.id, ConstraintSet.LEFT, x.toInt())
-        TransitionManager.beginDelayedTransition(root, AutoTransition().apply {
-            duration = 0
-            doOnEnd { setCenter(x, y) }
-        })
-        startLP.applyTo(root)
+        xLast = x
+        yLast = y
+        xAnim.forEach { it.setStartValue(x + sa.cw) }
+        yAnim.forEach { it.setStartValue(y + sa.cw) }
+        setCenter(x, y)
     }
 
     private fun linkStars(x: Float, y: Float) {
-        val dx = x - pointer.x
-        val dy = y - pointer.y
+        val dx = x - xLast
+        val dy = y - yLast
+
 
         val ang = (Math.toDegrees(atan2(dy * 1.0, dx * 1.0)) + 360 + 90) % 360
         val ind = (ang + sa.cwidth / 2).toInt() % 360 / (360 / sa.num)
@@ -203,11 +190,7 @@ class Sky(context: Context, private var wm: WindowManager) {
 
         if (sa.length - sa.size / 2 < dis && dis < sa.length + sa.size / 2) {
             path += "$ind"
-            setCenter(
-                pointer.x + sa.length * sin(Math.toRadians(ind * 60.0)).toFloat(),
-                pointer.y - sa.length * cos(Math.toRadians(ind * 60.0)).toFloat(),
-                subs(ind)
-            )
+            setCenter(xLast + sa.dx[ind], yLast + sa.dy[ind], subs(ind))
         }
     }
 
@@ -222,6 +205,8 @@ class Sky(context: Context, private var wm: WindowManager) {
 
     private fun endWindow() {
         stars[0].setDraw(sa.actions[""]?.drawable)
+        xAnim[0].setStartValue(sa.size / 2f)
+        yAnim[0].setStartValue(sa.size / 2f)
         setCenter(sa.size / 2f, sa.size / 2f)
         wlp.switchMode(WindowMode.COMPACT)
     }
@@ -239,12 +224,11 @@ class Sky(context: Context, private var wm: WindowManager) {
     }
 
     private fun setSize() {
-        stars.forEach { v ->
-            swapLP.forEach { lp ->
-                lp.constrainWidth(v.id, sa.size)
-                lp.constrainHeight(v.id, sa.size)
-            }
+        stars.forEach {
+            layout.constrainWidth(it.id, sa.size)
+            layout.constrainHeight(it.id, sa.size)
         }
+        layout.applyTo(root)
     }
 
     private fun ImageView.setDraw(drawable: Drawable?) =

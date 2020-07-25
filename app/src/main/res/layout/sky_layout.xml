@@ -6,19 +6,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <View
-        android:id="@+id/pointer"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:background="#FF0000"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
     <ImageView
         android:id="@+id/star_0"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        app:layout_constraintCircle="@id/pointer"
         android:contentDescription="@string/icon"
         app:layout_constraintCircleAngle="0"
         app:layout_constraintCircleRadius="0dp"

@@ -2,6 +2,9 @@ package com.example.realstar
 
 import android.content.Context
 import androidx.preference.PreferenceManager
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
 class SkyAttr {
     var length = 200
@@ -30,5 +33,11 @@ class SkyAttr {
         moveDuring = getInt("move_during", 150)
         nx = getInt("window_x", 100)
         ny = getInt("window_y", 100)
+        dx = IntArray(num) { (sin(it * PI / 3) * length).toInt() }
+        dy = IntArray(num) { -(cos(it * PI / 3) * length).toInt() }
     }
+
+    val cw get() = -size / 2
+    var dx = IntArray(num) { (sin(it * PI / 3) * length).toInt() }
+    var dy = IntArray(num) { -(cos(it * PI / 3) * length).toInt() }
 }
