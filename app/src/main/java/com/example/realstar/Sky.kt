@@ -233,7 +233,7 @@ class Sky(context: Context, private var wm: WindowManager) {
 
     private fun ImageView.setDraw(drawable: Drawable?) =
         if (drawable != null) setImageDrawable(drawable)
-        else setImageResource(R.drawable.ic_launcher_background)
+        else setImageResource(R.drawable.ic_launcher_cube)
 
     enum class WindowMode { COMPACT, HIDE, FULL }
 
