@@ -1,19 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">RealStar</string>
-    <string name="show">show</string>
+    <string name="show">申请悬浮显示权限</string>
     <string name="dismiss">dismiss</string>
     <string name="icon">icon</string>
     <string name="icon_of_app">Icon of app</string>
     <string name="title">title</string>
     <string name="gesture">gesture</string>
     <string name="pack">package</string>
-    <string name="launch">Launch</string>
-    <string name="assign">Assign</string>
-    <string name="save">save</string>
-    <string name="load">load</string>
-    <string name="main_act">main act</string>
-    <string name="all_act">all act</string>
-    <string name="title_activity_settings">SettingsActivity</string>
+    <string name="launch">启动</string>
+    <string name="assign">分配</string>
+    <string name="save">保存</string>
+    <string name="load">载入</string>
+    <string name="main_act">已安装应用</string>
+    <string name="all_act">全部操作</string>
+    <string name="title_activity_settings">设置</string>
 
     <!-- Preference Titles -->
     <string name="messages_header">Messages</string>
@@ -29,16 +30,17 @@
     <string name="attachment_summary_on">Automatically download attachments for incoming emails
     </string>
     <string name="attachment_summary_off">Only download attachments when manually requested</string>
-    <string name="star_attr">Star Attr</string>
-    <string name="star_size_title">Star Size</string>
-    <string name="star_length_title">Star Length</string>
-    <string name="move_mode">Wait for move</string>
+    <string name="star_attr">图标设置</string>
+    <string name="star_size_title">图标大小</string>
+    <string name="star_length_title">图标间距</string>
+    <string name="move_mode">移动间隔</string>
     <string name="preference_file_key">STAR</string>
-    <string name="notification_hide">hide</string>
-    <string name="notification_stop">stop</string>
-    <string name="notification_title">Real Star Launcher</string>
-    <string name="notification_info">Touch to hide</string>
-    <string name="notification_app_list">App List</string>
-    <string name="notification_setting">Setting</string>
-    <string name="notification_exit">Exit</string>
+
+    <string name="notification_hide">隐藏</string>
+    <string name="notification_stop">停止</string>
+    <string name="notification_title">图标控制器</string>
+    <string name="notification_info">触摸隐藏图标</string>
+    <string name="notification_app_list">应用列表</string>
+    <string name="notification_setting">设置</string>
+    <string name="notification_exit">退出</string>
 </resources>

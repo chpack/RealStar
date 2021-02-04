@@ -41,25 +41,25 @@ class SkyBack : Service() {
         }
 
         val hidePI: PendingIntent = Intent(this, SkyBack::class.java).let {
-            it.putExtra("action", "hide")
+            it.putExtra("action", getString(R.string.notification_hide))
             PendingIntent.getService(this, 0, it, 0)
         }
 
         val exitPI: PendingIntent = Intent(this, SkyBack::class.java).let {
-            it.putExtra("action", "stop")
+            it.putExtra("action", getString(R.string.notification_stop))
             PendingIntent.getService(this, 1, it, 0)
         }
 
         val notification = Notification.Builder(this, "Controller")
-            .setContentTitle("Real Star Launcher")
-            .setContentText("Touch to hide")
+            .setContentTitle(getString(R.string.notification_title))
+            .setContentText(getString(R.string.notification_info))
             .setSmallIcon(R.drawable.ic_launcher_cube)
             .setLargeIcon(Icon.createWithResource(this, R.drawable.ic_launcher_cube))
             .setContentIntent(hidePI)
             .setTicker("Keep alive")
-            .addAction(Notification.Action.Builder(null, "App List", appListPI).build())
-            .addAction(Notification.Action.Builder(null, "Setting", settingPi).build())
-            .addAction(Notification.Action.Builder(null, "Exit", exitPI).build())
+            .addAction(Notification.Action.Builder(null, getString(R.string.notification_app_list), appListPI).build())
+            .addAction(Notification.Action.Builder(null, getString(R.string.notification_setting), settingPi).build())
+            .addAction(Notification.Action.Builder(null, getString(R.string.notification_exit), exitPI).build())
             .build()
 
         startForeground(1, notification)
