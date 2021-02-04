@@ -4,6 +4,9 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.PixelFormat.RGBA_8888
 import android.graphics.drawable.Drawable
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.util.Log
 import android.view.Gravity
 import android.view.MotionEvent
 import android.view.View
@@ -35,6 +38,8 @@ class Sky(context: Context, private var wm: WindowManager) {
 
     private var subStars = IntArray(6)
     private fun subs(i: Int) = stars[subStars[i]]
+
+    var vib = context.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
 
     /**
      * UserMode mean operation mode.
@@ -191,6 +196,10 @@ class Sky(context: Context, private var wm: WindowManager) {
         if (sa.length - sa.size / 2 < dis && dis < sa.length + sa.size / 2) {
             path += "$ind"
             setCenter(xLast + sa.dx[ind], yLast + sa.dy[ind], subs(ind))
+            if (vib.hasVibrator())
+                vib.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE))
+            else
+                Log.d("asfasdf", "no vibra")
         }
     }
 

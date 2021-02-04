@@ -5,10 +5,15 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Icon
 import android.os.IBinder
+import android.os.VibrationEffect
+import android.os.Vibrator
+import android.util.Log
 import android.view.WindowManager
 
 class SkyBack : Service() {
     private lateinit var sky: Sky
+    val nm by lazy { getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager }
+
     override fun onCreate() {
         super.onCreate()
         val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
@@ -16,7 +21,6 @@ class SkyBack : Service() {
         sa.actions = ActionManager(this)
         sky = Sky(this, wm)
 
-        val nm = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         nm.createNotificationChannel(
             NotificationChannel(
                 "Controller",
@@ -26,6 +30,7 @@ class SkyBack : Service() {
                 description = "Simple control Sky Launcher"
             }
         )
+        nm.cancelAll()
 
         val settingPi: PendingIntent = Intent(this, SettingsActivity::class.java).let {
             PendingIntent.getActivity(this, 0, it, 0)
@@ -42,7 +47,7 @@ class SkyBack : Service() {
 
         val exitPI: PendingIntent = Intent(this, SkyBack::class.java).let {
             it.putExtra("action", "stop")
-            PendingIntent.getService(this, 0, it, 0)
+            PendingIntent.getService(this, 1, it, 0)
         }
 
         val notification = Notification.Builder(this, "Controller")
@@ -63,7 +68,11 @@ class SkyBack : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
         intent?.extras?.let {
             when (it["action"]) {
-                "stop" -> stopSelf()
+                "stop" -> {
+                    nm.cancelAll()
+                    stopForeground(true)
+                    stopSelf()
+                }
                 "hide" -> sky.hide()
             }
         }
