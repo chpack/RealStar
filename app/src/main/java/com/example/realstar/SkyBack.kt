@@ -5,9 +5,6 @@ import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Icon
 import android.os.IBinder
-import android.os.VibrationEffect
-import android.os.Vibrator
-import android.util.Log
 import android.view.WindowManager
 
 class SkyBack : Service() {
@@ -16,21 +13,16 @@ class SkyBack : Service() {
 
     override fun onCreate() {
         super.onCreate()
-        val wm = getSystemService(Context.WINDOW_SERVICE) as WindowManager
         sa = (application as SkyApp).sa
         sa.actions = ActionManager(this)
-        sky = Sky(this, wm)
+        sky = Sky(this)
 
-        nm.createNotificationChannel(
-            NotificationChannel(
-                "Controller",
-                "Controller",
-                NotificationManager.IMPORTANCE_LOW
-            ).apply {
-                description = "Simple control Sky Launcher"
-            }
-        )
-        nm.cancelAll()
+        val notification = startNotification()
+        startForeground(1, notification)
+    }
+
+    private fun startNotification(): Notification {
+
 
         val settingPi: PendingIntent = Intent(this, SettingsActivity::class.java).let {
             PendingIntent.getActivity(this, 0, it, 0)
@@ -50,19 +42,47 @@ class SkyBack : Service() {
             PendingIntent.getService(this, 1, it, 0)
         }
 
-        val notification = Notification.Builder(this, "Controller")
+        nm.createNotificationChannel(
+            NotificationChannel(
+                "Controller",
+                "Controller",
+                NotificationManager.IMPORTANCE_LOW
+            ).apply {
+                description = "Simple control Sky Launcher"
+            }
+        )
+        nm.cancelAll()
+
+        return Notification.Builder(this, "Controller")
             .setContentTitle(getString(R.string.notification_title))
             .setContentText(getString(R.string.notification_info))
             .setSmallIcon(R.drawable.ic_launcher_cube)
             .setLargeIcon(Icon.createWithResource(this, R.drawable.ic_launcher_cube))
             .setContentIntent(hidePI)
             .setTicker("Keep alive")
-            .addAction(Notification.Action.Builder(null, getString(R.string.notification_app_list), appListPI).build())
-            .addAction(Notification.Action.Builder(null, getString(R.string.notification_setting), settingPi).build())
-            .addAction(Notification.Action.Builder(null, getString(R.string.notification_exit), exitPI).build())
+            .addAction(
+                Notification.Action.Builder(
+                    null,
+                    getString(R.string.notification_app_list),
+                    appListPI
+                ).build()
+            )
+            .addAction(
+                Notification.Action.Builder(
+                    null,
+                    getString(R.string.notification_setting),
+                    settingPi
+                ).build()
+            )
+            .addAction(
+                Notification.Action.Builder(
+                    null,
+                    getString(R.string.notification_exit),
+                    exitPI
+                ).build()
+            )
             .build()
 
-        startForeground(1, notification)
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
@@ -70,6 +90,7 @@ class SkyBack : Service() {
             when (it["action"]) {
                 "stop" -> {
                     nm.cancelAll()
+                    sky.exit()
                     stopForeground(true)
                     stopSelf()
                 }
