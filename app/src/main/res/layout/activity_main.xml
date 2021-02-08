@@ -4,7 +4,7 @@
     android:id="@+id/clay"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context="top.c0x43.realstar.MainActivity">
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

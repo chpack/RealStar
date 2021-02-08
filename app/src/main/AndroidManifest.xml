@@ -9,7 +9,7 @@
     <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
-        android:name=".SkyApp"
+        android:name="top.c0x43.realstar.SkyApp"
         android:allowBackup="true"
         android:fullBackupContent="@xml/backup_descriptor"
         android:icon="@mipmap/ic_launcher"
@@ -18,16 +18,16 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".SettingsActivity"
+            android:name="top.c0x43.realstar.SettingsActivity"
             android:label="@string/title_activity_settings" />
-        <activity android:name=".AppListActivity" />
+        <activity android:name="top.c0x43.realstar.AppListActivity" />
 
         <service
-            android:name=".SkyBack"
+            android:name="top.c0x43.realstar.SkyBack"
             android:enabled="true"
             android:exported="false" />
 
-        <activity android:name=".MainActivity">
+        <activity android:name="top.c0x43.realstar.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

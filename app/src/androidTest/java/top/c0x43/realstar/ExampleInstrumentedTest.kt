@@ -1,4 +1,4 @@
-package com.example.realstar
+package top.c0x43.realstar
 
 import androidx.test.platform.app.InstrumentationRegistry
 import androidx.test.ext.junit.runners.AndroidJUnit4

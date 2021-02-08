@@ -1,4 +1,4 @@
-package com.example.realstar
+package top.c0x43.realstar
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -16,6 +16,7 @@ import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.constraintlayout.widget.ConstraintSet
 import androidx.dynamicanimation.animation.SpringAnimation
 import androidx.preference.PreferenceManager
+import com.example.realstar.R
 import kotlinx.android.synthetic.main.sky_layout.view.*
 import kotlin.math.atan2
 import kotlin.math.pow

@@ -1,11 +1,11 @@
-package com.example.realstar
+package top.c0x43.realstar
 
 import android.app.*
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Icon
 import android.os.IBinder
-import android.view.WindowManager
+import com.example.realstar.R
 
 class SkyBack : Service() {
     private lateinit var sky: Sky

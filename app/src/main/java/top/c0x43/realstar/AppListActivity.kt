@@ -1,4 +1,4 @@
-package com.example.realstar
+package top.c0x43.realstar
 
 import android.content.Intent
 import android.net.Uri
@@ -10,6 +10,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.example.realstar.R
 import kotlinx.android.synthetic.main.activity_app_list.*
 import kotlinx.android.synthetic.main.app_list_item_layout.view.*
 

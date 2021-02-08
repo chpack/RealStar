@@ -1,4 +1,4 @@
-package com.example.realstar
+package top.c0x43.realstar
 
 import android.content.ComponentName
 import android.content.Context
@@ -31,7 +31,8 @@ class ActionManager(var context: Context) {
             Intent(Intent.ACTION_MAIN).apply { addCategory(Intent.CATEGORY_DEFAULT) }, 0
         ).forEach {
             it?.let {
-                add(EndAction(it, context.packageManager)
+                add(
+                    EndAction(it, context.packageManager)
                     .apply { type = EndAction.Type.ACT })
             }
         }

@@ -1,4 +1,4 @@
-package com.example.realstar
+package top.c0x43.realstar
 
 import android.content.Context
 import androidx.preference.PreferenceManager
