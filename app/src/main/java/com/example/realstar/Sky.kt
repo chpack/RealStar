@@ -24,7 +24,7 @@ import kotlin.math.pow
 @SuppressLint("ClickableViewAccessibility")
 class Sky(context: Context) {
 
-    private lateinit var wm: WindowManager
+    private var wm: WindowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
     /**
      * Views
@@ -65,7 +65,7 @@ class Sky(context: Context) {
     private var yAnim = Array(sa.num + 1) { SpringAnimation(stars[it], SpringAnimation.Y) }
 
     var xLast = 0f
-    var yLast = 0f
+    private var yLast = 0f
 
     private var path = ""
 
@@ -93,7 +93,6 @@ class Sky(context: Context) {
     }
 
     init {
-        wm = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
         sa.sizeChange = { setSize() }
         sa.load(context)
 
