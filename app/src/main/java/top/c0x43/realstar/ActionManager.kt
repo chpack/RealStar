@@ -1,5 +1,6 @@
 package top.c0x43.realstar
 
+import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
@@ -7,6 +8,7 @@ import android.widget.Toast
 import java.io.File
 import java.io.FileNotFoundException
 
+@SuppressLint("QueryPermissionsNeeded")
 class ActionManager(var context: Context) {
     var actions = MutableList<EndAction>(0) { EndAction() }
     var actSet = HashSet<EndAction>()
@@ -33,7 +35,7 @@ class ActionManager(var context: Context) {
             it?.let {
                 add(
                     EndAction(it, context.packageManager)
-                    .apply { type = EndAction.Type.ACT })
+                        .apply { type = EndAction.Type.ACT })
             }
         }
     }
@@ -52,7 +54,7 @@ class ActionManager(var context: Context) {
     }
 
     private fun add(ea: EndAction) {
-        if(ea in actSet) return
+        if (ea in actSet) return
 
         if (ea.line.isNotEmpty())
             actMap[ea.line] = ea

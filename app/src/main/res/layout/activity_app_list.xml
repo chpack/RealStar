@@ -6,41 +6,13 @@
     android:layout_height="match_parent"
     tools:context="top.c0x43.realstar.AppListActivity">
 
-    <Button
-        android:id="@+id/showbut"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/show"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/show_launcher"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/main_act"
-        app:layout_constraintStart_toEndOf="@+id/showbut"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/show_all"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/all_act"
-        app:layout_constraintStart_toEndOf="@+id/show_launcher"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/lists"
+    <androidx.fragment.app.FragmentContainerView
+        android:id="@+id/fragment"
+        android:name="top.c0x43.realstar.fragment.AppItemFragment"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/showbut" />
-
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

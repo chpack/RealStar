@@ -25,7 +25,8 @@ import kotlin.math.pow
 @SuppressLint("ClickableViewAccessibility")
 class Sky(context: Context) {
 
-    private var wm: WindowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
+    private var wm: WindowManager =
+        context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
     /**
      * Views
@@ -162,7 +163,7 @@ class Sky(context: Context) {
             flags = WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE or
                     WindowManager.LayoutParams.FLAG_NOT_TOUCH_MODAL or
                     WindowManager.LayoutParams.FLAG_LAYOUT_IN_SCREEN or
-                    WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR or
+//                    WindowManager.LayoutParams.FLAG_LAYOUT_INSET_DECOR or
                     0
             gravity = Gravity.START or Gravity.TOP
             width = sa.size
@@ -269,7 +270,7 @@ class Sky(context: Context) {
         if (windowMode == WindowMode.HIDE) wlp.switchMode(WindowMode.COMPACT)
         else wlp.switchMode(WindowMode.HIDE)
 
-    fun exit(){
+    fun exit() {
         wm.removeView(root)
     }
 }
