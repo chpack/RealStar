@@ -1,4 +1,4 @@
-package top.c0x43.realstar
+package top.c0x43.realstar.entity
 
 import android.content.pm.PackageManager
 import android.content.pm.ResolveInfo

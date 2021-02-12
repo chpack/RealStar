@@ -1,4 +1,4 @@
-package top.c0x43.realstar
+package top.c0x43.realstar.activity
 
 import android.os.Bundle
 import android.widget.Toast

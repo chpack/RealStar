@@ -1,4 +1,4 @@
-package top.c0x43.realstar
+package top.c0x43.realstar.service
 
 import android.app.*
 import android.content.Context
@@ -6,6 +6,12 @@ import android.content.Intent
 import android.graphics.drawable.Icon
 import android.os.IBinder
 import com.example.realstar.R
+import top.c0x43.realstar.data.ActionManager
+import top.c0x43.realstar.Sky
+import top.c0x43.realstar.SkyApp
+import top.c0x43.realstar.activity.AppListActivity
+import top.c0x43.realstar.activity.SettingsActivity
+import top.c0x43.realstar.sa
 
 class SkyBack : Service() {
     private lateinit var sky: Sky

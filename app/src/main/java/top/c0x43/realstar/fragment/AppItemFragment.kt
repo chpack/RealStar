@@ -11,7 +11,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.realstar.R
 import kotlinx.android.synthetic.main.fragment_app_item_list.view.*
-import top.c0x43.realstar.EndAction
+import top.c0x43.realstar.entity.EndAction
 import top.c0x43.realstar.SkyApp
 import top.c0x43.realstar.sa
 

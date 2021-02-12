@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.example.realstar.R
 import kotlinx.android.synthetic.main.fragment_app_item.view.*
-import top.c0x43.realstar.EndAction
+import top.c0x43.realstar.entity.EndAction
 import top.c0x43.realstar.sa
 
 class AppItemRecyclerViewAdapter : RecyclerView.Adapter<AppItemRecyclerViewAdapter.ViewHolder>() {

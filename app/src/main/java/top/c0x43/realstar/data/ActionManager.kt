@@ -1,10 +1,11 @@
-package top.c0x43.realstar
+package top.c0x43.realstar.data
 
 import android.annotation.SuppressLint
 import android.content.ComponentName
 import android.content.Context
 import android.content.Intent
 import android.widget.Toast
+import top.c0x43.realstar.entity.EndAction
 import java.io.File
 import java.io.FileNotFoundException
 

@@ -19,17 +19,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="top.c0x43.realstar.AppListActivity" />
+        <activity android:name="top.c0x43.realstar.activity.AppListActivity" />
         <activity
-            android:name="top.c0x43.realstar.SettingsActivity"
+            android:name="top.c0x43.realstar.activity.SettingsActivity"
             android:label="@string/title_activity_settings" />
 
         <service
-            android:name="top.c0x43.realstar.SkyBack"
+            android:name="top.c0x43.realstar.service.SkyBack"
             android:enabled="true"
             android:exported="false" />
 
-        <activity android:name="top.c0x43.realstar.MainActivity">
+        <activity android:name="top.c0x43.realstar.activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

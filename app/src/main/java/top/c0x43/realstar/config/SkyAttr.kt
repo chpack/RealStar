@@ -1,7 +1,8 @@
-package top.c0x43.realstar
+package top.c0x43.realstar.config
 
 import android.content.Context
 import androidx.preference.PreferenceManager
+import top.c0x43.realstar.data.ActionManager
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
