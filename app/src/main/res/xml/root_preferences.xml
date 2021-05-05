@@ -28,6 +28,14 @@
             app:showSeekBarValue="true"
             app:title="@string/move_mode" />
 
+        <SeekBarPreference
+            android:max="300"
+            app:defaultValue="50"
+            app:key="vibrator_during"
+            app:min="0"
+            app:showSeekBarValue="true"
+            app:title="@string/vibrator_during" />
+
     </PreferenceCategory>
 
 </PreferenceScreen>

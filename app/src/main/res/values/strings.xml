@@ -44,4 +44,5 @@
     <string name="app_name_example" translatable="false">App name example</string>
     <string name="package_name_example" translatable="false">package name example</string>
     <string name="action_on_app" translatable="false">action on app</string>
+    <string name="vibrator_during">Vibrator during</string>
 </resources>

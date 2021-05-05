@@ -201,8 +201,8 @@ class Sky(context: Context) {
         if (sa.length - sa.size / 2 < dis && dis < sa.length + sa.size / 2) {
             path += "$ind"
             setCenter(xLast + sa.dx[ind], yLast + sa.dy[ind], subs(ind))
-            if (vib.hasVibrator())
-                vib.vibrate(VibrationEffect.createOneShot(50, VibrationEffect.DEFAULT_AMPLITUDE))
+            if (vib.hasVibrator() && sa.vir > 0)
+                vib.vibrate(VibrationEffect.createOneShot(sa.vir, VibrationEffect.DEFAULT_AMPLITUDE))
             else
                 Log.d("asfasdf", "no vibra")
         }

@@ -45,4 +45,6 @@ class SkyAttr {
     val cw get() = -size / 2
     var dx = IntArray(num) { (sin(it * PI / 3) * length).toInt() }
     var dy = IntArray(num) { -(cos(it * PI / 3) * length).toInt() }
+
+    var vir: Long = 50
 }

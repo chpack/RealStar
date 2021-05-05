@@ -13,6 +13,7 @@ class SettingsFragment : PreferenceFragmentCompat() {
                 "icon_size" -> sa.size = sp.getInt(key, sa.size)
                 "icon_length" -> sa.length = sp.getInt(key, sa.length)
                 "move_during" -> sa.moveDuring = sp.getInt(key, sa.moveDuring)
+                "vibrator_during" -> sa.vir = sp.getInt(key, 50).toLong()
             }
         }
 
